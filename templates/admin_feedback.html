@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h1 class="mb-4 text-center">All Website Feedback</h1>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User ID</th>
+          <th>User Email</th>
+          <th>Message</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for fb in feedbacks %}
+        <tr>
+          <td>{{ fb.id }}</td>
+          <td>
+            {% if fb.user_id %}
+              {{ fb.user_id }}
+            {% else %}
+              Guest
+            {% endif %}
+          </td>
+          <td>
+            {% if fb.user_email %}
+              {{ fb.user_email }}
+            {% else %}
+              Anonymous
+            {% endif %}
+          </td>
+          <td>{{ fb.message }}</td>
+          <td>{{ fb.created_at }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .product-table thead th {
+    vertical-align: middle; background: #232b34 !important; color: #fff;
+    font-size: 1.1em; font-weight: bold; border: none;
+  }
+  .product-table td, .product-table th { vertical-align: middle !important; border: none; }
+  .product-table tbody tr { background: #232b34; color: #f6f9fe; border-bottom: 2px solid #181e26; }
+  .product-image-cell { text-align: center; }
+  .product-image-thumb {
+    max-width: 85px; max-height: 75px; border-radius: 8px; display: block; margin: 0 auto 6px auto;
+    box-shadow: 0 1px 4px rgba(33,150,243,0.10);
+  }
+  .product-image-filename { font-size: 0.82em; color: #bbb; word-break: break-all; margin-top: 2px; }
+  .size-stock-btn {
+    padding: 4px 18px; font-size: 1em; border-radius: 4px; background: #278d53;
+    color: #fff; border: none; margin: 0; font-weight: bold; display: inline-block; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .size-stock-btn:hover { background: #206d40; color: #fff; text-decoration: none; }
+  @media (max-width: 767.98px) {
+    .product-table, .product-table tbody, .product-table tr, .product-table td { display: block; width: 100%; }
+    .product-table thead { display: none; }
+    .product-table tr { margin-bottom: 1.3em; border-bottom: 2px solid #232b34; background: #181e26; box-shadow: 0 2px 8px rgba(33,150,243,0.04);}
+    .product-table td {
+      padding: 1.1em 0.8em 1.1em 8.5em !important; position: relative; border: none; border-bottom: 1px solid #333;
+      min-height: 40px; font-size: 0.97em; background: transparent; color: #f6f9fe; word-break: break-word;
+    }
+    .product-table td:before {
+      position: absolute; top: 50%; left: 1em; transform: translateY(-50%);
+      width: 7.2em; padding-right: 0.5em; white-space: pre-line; font-weight: 700; color: #5db2ff;
+      content: attr(data-label); font-size: 1.02em; text-align: left; line-height: 1.25;
+      overflow-wrap: break-word; word-break: break-word;
+    }
+    .product-table td:last-child { border-bottom: 0; }
+    .product-table img { max-width: 120px; height: auto; border-radius: 7px; margin-bottom: 0.3em; display: block; }
+    .size-stock-btn { margin-top: 10px; }
+  }
+</style>
+<div class="container mt-5">
+  <h2 style="color:#fff;">All Products in Database</h2>
+  <!-- SEARCH FORM START -->
+  <form method="get" action="{{ url_for('view_products_db') }}" class="mb-4" style="max-width:400px;">
+    <div class="input-group">
+      <input type="text" name="search" class="form-control" placeholder="Search by ID, Product ID, Name, or Category" value="{{ request.args.get('search', '') }}">
+      <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+  </form>
+  <!-- SEARCH FORM END -->
+  <div class="table-responsive">
+    <table class="table table-striped product-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Product ID</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Image</th>
+          <th>Stock/Sizes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if products|length == 0 %}
+        <tr>
+          <td colspan="6" style="text-align:center;color:#bbb;">No products found.</td>
+        </tr>
+        {% else %}
+        {% for product in products %}
+        <tr>
+          <td data-label="ID">{{ product.id }}</td>
+          <td data-label="Product ID">{{ product.product_id }}</td>
+          <td data-label="Name">{{ product.name }}</td>
+          <td data-label="Price">₱{{ "%.2f"|format(product.price) }}</td>
+          <td data-label="Image" class="product-image-cell">
+            {% if product.image %}
+              <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}" class="product-image-thumb">
+              <div class="product-image-filename">{{ product.image }}</div>
+            {% else %}
+              <span class="text-muted">No image</span>
+            {% endif %}
+          </td>
+          <td data-label="Stock/Sizes" style="text-align:center;">
+            {% set pid = product.product_id %}
+            {# Direct Extra1-Extra20 to manage_item_stock; others as before #}
+            {% if pid.startswith('Extra') and pid[5:]|int >= 1 and pid[5:]|int <= 20 %}
+              <a href="{{ url_for('manage_item_stock', product_id=pid) }}" class="size-stock-btn">
+                Manage Stock
+              </a>
+            {% elif pid == 'Extra21' or pid == 'Extra22' %}
+              <a href="{{ url_for('manage_shoe_sizes', product_id=pid) }}" class="size-stock-btn">
+                Manage Sizes
+              </a>
+            {% elif pid == 'Extra23' %}
+              <a href="{{ url_for('manage_sizes', product_id=pid) }}" class="size-stock-btn">
+                Manage Sizes
+              </a>
+            {% else %}
+              <a href="{{ url_for('manage_stock', product_id=pid) }}" class="size-stock-btn">
+                Manage Stock
+              </a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2 style="color:#fff;">Manage Sizes for Product: {{ product_id }}</h2>
+  <table class="table table-striped table-dark">
+    <thead>
+      <tr>
+        <th>Size</th>
+        <th>Stock</th>
+        <th>Update</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in sizes %}
+      <tr>
+        <form method="post" action="{{ url_for('update_size_stock', size_id=s.id) }}">
+          <td>{{ s.size }}</td>
+          <td>
+            <input type="number" name="stock" value="{{ s.stock }}" min="0" class="form-control" style="width: 100px;">
+          </td>
+          <td>
+            <button type="submit" class="btn btn-success">Update</button>
+          </td>
+        </form>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{{ url_for('view_products_db') }}" class="btn btn-secondary mt-3">Back to Products</a>
+</div>
+{% endblock %}

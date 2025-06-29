@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-6">
+      <img src="{{ product.image }}" alt="{{ product.name }}" class="img-fluid">
+    </div>
+    <div class="col-md-6">
+      <h2>{{ product.name }}</h2>
+      <p>₱{{ '%.2f'|format(product.price|float) }}</p>
+      <p>{{ product.description }}</p>
+      
+      <!-- Buy Now Form -->
+      <form action="{{ url_for('buy_now_info', product_id=product.id) }}" method="post">
+        <input type="hidden" name="size" value="M"> {# or provide dropdown for size #}
+        <input type="hidden" name="quantity" value="1"> {# or provide a quantity input #}
+        <input type="hidden" name="price" value="{{ product.price }}">
+        <input type="text" name="name" required placeholder="Full Name">
+        <input type="text" name="contact" required placeholder="Contact Number">
+        <input type="text" name="address" required placeholder="Address">
+        <button type="submit" class="btn btn-primary">Buy Now</button>
+      </form>
+      <!-- End Buy Now Form -->
+
+      <!-- (Optional) Add to Cart button here too -->
+    </div>
+  </div>
+</div>
+{% endblock %}

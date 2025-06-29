@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid p-5 mt-5 mb-3" style="background-color: maroon">
+  <h3 class="text-center text-white"><b>ATHLETO ProForm Bra</b></h3>
+  <h5 class="text-center text-white">Premium Performance Wear</h5>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <img src="{{ url_for('static', filename='pictures/women/top4_women.png') }}" class="img-fluid rounded" alt="Athletic Tee"
+        style="max-height: 500px;">
+    </div>
+    <div class="col-md-6">
+      <h2>ATHLETO ProForm Bra</h2>
+      <h5><i>Medium-Support Sports Bra</i></h5>
+      <p class="lead"> ₱1,125</p>
+
+      <p>
+        <span id="stockDisplay" class="text-success">
+          Stock: {{ size_stock.get('M', 0) }}
+        </span>
+      </p>
+
+      <p class="lead"> Color: Onyx Black </p>
+      <p>Power your movement. Support your strength.</p>
+
+      <p>The ATHLETO ProForm Bra offers balanced support for medium-impact workouts like cycling, weights, and dance. With a racerback design and a compressive fit, it delivers freedom of motion while keeping everything secure. Made to move with you—no distractions, just performance.
+      </p>
+
+      <p> Features:</p>
+      <p>Medium support with removable pads</p>
+      <p>Racerback design for full range of motion</p>
+      <p>Sweat-wicking, fast-drying fabric</p>
+
+      <div class="mb-3">
+        <label class="form-label">Size:</label>
+        <select class="form-select" style="width: 100px;" id="sizeSelect">
+          {% for size in ['XS', 'S', 'M', 'L', 'XL'] %}
+          <option value="{{ size }}" {% if size == 'M' %}selected{% endif %}>{{ size }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="quantity" class="form-label">Quantity:</label>
+        <div class="input-group" style="width: 120px;">
+          <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(-1)">-</button>
+          <input type="number" id="quantityInput" value="1" min="1" name="quantity" class="form-control text-center">
+          <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(1)">+</button>
+        </div>
+        <small id="quantityError" class="text-danger" style="display:none;">Cannot exceed available stock.</small>
+      </div>
+
+      <!-- Add to Cart and Buy Now Buttons -->
+      <div class="mb-2">
+        <form id="addToCartForm" action="{{ url_for('add_to_cart', product_id='top4_women') }}" method="post" style="display:inline;">
+          <input type="hidden" name="size" id="addToCartSize" value="M">
+          <input type="hidden" name="quantity" id="addToCartQty" value="1">
+          <button type="submit" class="btn btn-success" id="addToCartBtn">
+            Add to Cart
+          </button>
+        </form>
+
+        <form id="buyNowForm" action="{{ url_for('buy_now_info', product_id='top4_women') }}" method="post" style="display:inline;">
+          <input type="hidden" name="size" id="buyNowSize" value="M">
+          <input type="hidden" name="price" value="1125.00">
+          <input type="hidden" name="quantity" id="buyNowQty" value="1">
+          <button type="submit" class="btn btn-warning" id="buyNowBtn">
+            Buy Now
+          </button>
+        </form>
+      </div>
+
+      <div class="mt-3">
+        <a href="{{ url_for('top_women') }}" class="btn btn-outline-secondary">Back to Tops</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Inject stock per size -->
+<script id="size-stock-data" type="application/json">
+  {{ size_stock | tojson }}
+</script>
+
+<script>
+  const sizeStock = JSON.parse(document.getElementById("size-stock-data").textContent);
+
+  const sizeSelect = document.getElementById("sizeSelect");
+  const addToCartSizeInput = document.getElementById("addToCartSize");
+  const buyNowSizeInput = document.getElementById("buyNowSize");
+
+  const quantityInput = document.getElementById("quantityInput");
+  const addToCartQtyInput = document.getElementById("addToCartQty");
+  const buyNowQtyInput = document.getElementById("buyNowQty");
+  const quantityError = document.getElementById("quantityError");
+  const stockDisplay = document.getElementById("stockDisplay");
+
+  let maxStock = 1;
+
+  function updateInputs() {
+    const selectedSize = sizeSelect.value;
+    const stock = sizeStock[selectedSize] || 0;
+
+    stockDisplay.textContent = "Stock: " + stock;
+
+    quantityInput.max = stock;
+    maxStock = stock;
+
+    let selectedQty = parseInt(quantityInput.value);
+
+    if (selectedQty > stock) {
+      selectedQty = stock;
+      quantityInput.value = selectedQty;
+      quantityError.style.display = "inline";
+    } else {
+      quantityError.style.display = "none";
+    }
+
+    if (selectedQty < 1 || isNaN(selectedQty)) {
+      selectedQty = 1;
+      quantityInput.value = selectedQty;
+    }
+
+    addToCartSizeInput.value = selectedSize;
+    buyNowSizeInput.value = selectedSize;
+    addToCartQtyInput.value = selectedQty;
+    buyNowQtyInput.value = selectedQty;
+
+    document.getElementById("addToCartBtn").disabled = stock === 0;
+    document.getElementById("buyNowBtn").disabled = stock === 0;
+  }
+
+  function changeQuantity(delta) {
+    let qty = parseInt(quantityInput.value) || 1;
+    qty = Math.max(1, Math.min(maxStock, qty + delta));
+    quantityInput.value = qty;
+    updateInputs();
+  }
+
+  sizeSelect.addEventListener("change", updateInputs);
+  quantityInput.addEventListener("input", updateInputs);
+  window.addEventListener("load", updateInputs);
+</script>
+{% endblock %}

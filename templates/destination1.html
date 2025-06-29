@@ -1,0 +1,560 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    body {
+        background: #181a1b !important;
+        color: #fafafa;
+    }
+
+    .footer-dark {
+        background: #181a1b !important;
+        color: #fff !important;
+    }
+
+    .footer-dark h5,
+    .footer-dark a,
+    .footer-dark li,
+    .footer-dark .text-muted {
+        color: #fff !important;
+        opacity: 1.0;
+    }
+
+    .footer-dark a:hover {
+        color: #ffb3cb !important;
+        text-decoration: underline;
+    }
+
+    .nike-product-page-outer {
+        min-height: 85vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 24px 0 24px 0;
+    }
+
+    .nike-product-container {
+        display: flex;
+        flex-direction: row;
+        background: #232529;
+        border-radius: 16px;
+        box-shadow: 0 4px 28px rgba(0, 0, 0, 0.12);
+        width: 100%;
+        max-width: 1100px;
+        min-height: 600px;
+        gap: 0;
+        overflow: hidden;
+    }
+
+    .nike-gallery-section {
+        display: flex;
+        flex-direction: row;
+        min-width: 0;
+        padding: 24px 0 24px 24px;
+        background: #232529;
+        border-radius: 16px 0 0 16px;
+        align-items: flex-start;
+        width: 55%;
+        max-width: 550px;
+    }
+
+    .nike-thumbs {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-right: 12px;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+
+    .nike-thumb-img {
+        width: 56px;
+        height: 56px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 2px solid transparent;
+        background: #222;
+        cursor: pointer;
+        transition: border 0.18s, box-shadow 0.18s;
+        box-shadow: 0 1px 4px rgba(180, 0, 80, 0.07);
+    }
+
+    .nike-thumb-img.selected,
+    .nike-thumb-img:hover {
+        border: 2.5px solid #ffb3cb;
+        box-shadow: 0 2px 7px rgba(255, 179, 203, 0.13);
+    }
+
+    .nike-main-image-flip-container {
+        width: 390px;
+        height: 390px;
+        max-width: 95vw;
+        max-height: 95vw;
+        min-width: 260px;
+        min-height: 260px;
+        aspect-ratio: 1/1;
+        perspective: 1200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #232529;
+        border-radius: 18px;
+        box-shadow: 0 2px 12px rgba(30, 30, 40, 0.34);
+        position: relative;
+        margin: 0 auto;
+    }
+
+    .nike-main-image-flipper {
+        width: 98%;
+        height: 98%;
+        position: relative;
+        transition: transform 0.7s cubic-bezier(.4, 2, .3, 1);
+        transform-style: preserve-3d;
+        border-radius: 14px;
+    }
+
+    .flip-0 {
+        transform: rotateY(0deg);
+    }
+
+    .flip-1 {
+        transform: rotateY(120deg);
+    }
+
+    .flip-2 {
+        transform: rotateY(240deg);
+    }
+
+    .nike-main-image-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #232529;
+        box-shadow: 0 2px 12px rgba(30, 30, 40, 0.22);
+    }
+
+    .face-a {
+        transform: rotateY(0deg);
+    }
+
+    .face-b {
+        transform: rotateY(120deg);
+    }
+
+    .face-c {
+        transform: rotateY(240deg);
+    }
+
+    .nike-main-image-face img {
+        width: 97%;
+        height: 97%;
+        object-fit: cover;
+        border-radius: 16px;
+        background: #191c1e;
+        box-shadow: 0 2px 9px rgba(100, 0, 40, 0.13);
+    }
+
+    .nike-details-section {
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: 450px;
+        padding: 40px 38px 36px 38px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        background: #232529;
+        border-radius: 0 16px 16px 0;
+        margin-left: auto;
+        color: #fff;
+    }
+
+    .nike-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #ffb3cb;
+        margin-bottom: 0.1em;
+        letter-spacing: 0.02em;
+    }
+
+    .nike-subtitle {
+        font-size: 1.08rem;
+        color: #e2e2e2;
+        margin-bottom: 1.1em;
+        font-style: italic;
+    }
+
+    .nike-price {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 1.1em;
+        color: #fff;
+    }
+
+    .nike-btn {
+        width: 100%;
+        padding: 12px;
+        font-weight: 700;
+        font-size: 1.01rem;
+        border-radius: 6px;
+        cursor: pointer;
+        border: none;
+        margin-bottom: 11px;
+        transition: background .16s, color .16s;
+    }
+
+    .nike-btn.primary {
+        background-color: #ffb3cb;
+        color: #232529;
+        border: 2px solid #ffb3cb;
+        margin-bottom: 6px;
+    }
+
+    .nike-btn.primary:hover,
+    .nike-btn.primary:focus {
+        background: #fff;
+        color: #232529;
+    }
+
+    .nike-btn.secondary {
+        background: #232529;
+        color: #ffb3cb;
+        border: 2px solid #ffb3cb;
+    }
+
+    .nike-btn.secondary:hover,
+    .nike-btn.secondary:focus {
+        background: #191c1e;
+    }
+
+    .nike-size-section {
+        margin-bottom: 1.3em;
+    }
+
+    .nike-size-note {
+        font-size: 0.9rem;
+        color: #d6d6d6;
+        margin-bottom: 0.4em;
+    }
+
+    .nike-size-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .nike-size-option {
+        padding: 7px 0;
+        font-size: 0.98rem;
+        border: 1.2px solid #393a3b;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 5px;
+        background: #191c1e;
+        color: #fefefe;
+        transition: all 0.2s;
+        user-select: none;
+    }
+
+    .nike-size-option:hover,
+    .nike-size-option.selected {
+        background: #232529;
+        border-color: #ffb3cb;
+        color: #fff;
+        outline: none;
+    }
+
+    .nike-desc-section {
+        margin-top: 12px;
+        font-size: 0.96rem;
+        color: #e2e2e2;
+        line-height: 1.6;
+    }
+
+    .nike-desc-section ul {
+        margin: 12px 0 0 20px;
+        padding: 0;
+    }
+
+    .nike-desc-section li {
+        font-size: .91rem;
+        color: #d6d6d6;
+    }
+
+    /* Responsive fixes below */
+    @media (max-width: 1100px) {
+        .nike-product-container {
+            flex-direction: column;
+            align-items: center;
+            width: 99vw;
+            min-height: unset;
+            max-width: 98vw;
+        }
+
+        .nike-gallery-section,
+        .nike-details-section {
+            border-radius: 16px;
+            width: 100%;
+            max-width: none;
+        }
+
+        .nike-gallery-section {
+            padding: 24px 0 10px 0;
+            justify-content: center;
+            max-width: 95vw;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .nike-details-section {
+            padding: 28px 5vw 18px 5vw;
+            max-width: 99vw;
+            margin-left: 0;
+            border-radius: 0 0 16px 16px;
+        }
+
+        .nike-main-image-flip-container {
+            width: 60vw;
+            height: 60vw;
+            min-width: 200px;
+            min-height: 200px;
+        }
+
+        .nike-main-image-face img {
+            width: 98vw;
+            height: 98vw;
+            max-width: 60vw;
+            max-height: 60vw;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .nike-product-page-outer {
+            padding: 8px 0;
+        }
+
+        .nike-product-container {
+            width: 100vw;
+            min-height: 400px;
+            border-radius: 0;
+            max-width: 100vw;
+        }
+
+        .nike-gallery-section {
+            border-radius: 0;
+            width: 100vw;
+            max-width: 100vw;
+            padding: 10px 0 10px 0;
+            /* Remove left padding */
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .nike-thumbs {
+            flex-direction: row;
+            gap: 3vw;
+            margin: 0 0 12px 0;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            max-width: 100vw;
+        }
+
+        .nike-thumb-img {
+            width: 18vw;
+            height: 18vw;
+            min-width: 44px;
+            min-height: 44px;
+            max-width: 80px;
+            max-height: 80px;
+        }
+
+        .nike-main-image-flip-container {
+            width: 92vw;
+            height: 92vw;
+            max-width: 96vw;
+            max-height: 96vw;
+            min-width: 0;
+            min-height: 0;
+            margin: 0 auto;
+        }
+
+        .nike-main-image-face img {
+            width: 90vw;
+            height: 90vw;
+            max-width: 92vw;
+            max-height: 92vw;
+        }
+    }
+
+    @media (max-width: 500px) {
+        .nike-main-image-flip-container {
+            width: 96vw;
+            height: 96vw;
+            min-width: 0;
+            min-height: 0;
+        }
+
+        .nike-main-image-face img {
+            width: 95vw;
+            height: 95vw;
+            max-width: 95vw;
+        }
+
+        .nike-details-section {
+            padding: 3vw 1vw 2vw 1vw;
+        }
+    }
+.nike-btn:disabled,
+.nike-btn.disabled {
+    background: #555 !important;
+    color: #bbb !important;
+    border-color: #888 !important;
+    cursor: not-allowed !important;
+    opacity: 0.7 !important;
+}
+.nike-size-option.disabled {
+    background: #222 !important;
+    color: #999 !important;
+    border-color: #222 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+</style>
+<div class="nike-product-page-outer">
+    <div class="nike-product-container">
+        <!-- Gallery -->
+        <div class="nike-gallery-section">
+            <div class="nike-thumbs">
+                <img src="{{ url_for('static', filename='pictures/latest/pink1.png') }}" class="nike-thumb-img selected"
+                    onclick="showMainImg(0)" alt="thumb1">
+                <img src="{{ url_for('static', filename='pictures/latest/pink2.png') }}" class="nike-thumb-img"
+                    onclick="showMainImg(1)" alt="thumb2">
+                <img src="{{ url_for('static', filename='pictures/latest/pink3.png') }}" class="nike-thumb-img"
+                    onclick="showMainImg(2)" alt="thumb3">
+            </div>
+            <div class="nike-main-image-flip-container" id="flipCont" tabindex="0">
+                <div class="nike-main-image-flipper flip-0" id="flipImageBox">
+                    <div class="nike-main-image-face face-a">
+                        <img id="mainNikeImgA" src="{{ url_for('static', filename='pictures/latest/pink1.png') }}"
+                            alt="Main Shoe View 1">
+                    </div>
+                    <div class="nike-main-image-face face-b">
+                        <img id="mainNikeImgB" src="{{ url_for('static', filename='pictures/latest/pink2.png') }}"
+                            alt="Main Shoe View 2">
+                    </div>
+                    <div class="nike-main-image-face face-c">
+                        <img id="mainNikeImgC" src="{{ url_for('static', filename='pictures/latest/pink3.png') }}"
+                            alt="Main Shoe View 3">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Details -->
+        <div class="nike-details-section">
+            <span class="nike-title">[DESTINATION 1 SHOE NAME]</span>
+            <div class="nike-subtitle">[Destination 1 Subtitle]</div>
+            <div class="nike-price">P21,995.00</div>
+            <span id="stockDisplay1" class="text-success">Stock:</span>
+
+            <form id="addToCartForm1" action="{{ url_for('add_to_cart', product_id='Extra21') }}" method="post"
+                style="display:inline;">
+                <input type="hidden" name="size" id="addToCartSize1" value="">
+                <input type="hidden" name="quantity" id="addToCartQty1" value="1">
+                <button type="submit" class="nike-btn primary" id="addToCartBtn1" style="margin-bottom:8px;">Add to Cart</button>
+            </form>
+            <form id="buyNowForm1" action="{{ url_for('buy_now_info', product_id='Extra21') }}" method="post"
+                style="display:inline;">
+                <input type="hidden" name="size" id="buyNowSize1" value="">
+                <input type="hidden" name="price" value="21995.00">
+                <input type="hidden" name="quantity" id="buyNowQty1" value="1">
+                <button type="submit" class="nike-btn secondary" id="buyNowBtn1">Buy Now</button>
+            </form>
+            <form class="nike-size-section" onsubmit="return false;" style="margin-top:18px;">
+                <div class="nike-size-note">Sizes: </div>
+                <div class="nike-size-grid" id="sizeGrid1">
+                    {% for size, stock in size_stock.items() %}
+                    <div class="nike-size-option {% if stock == 0 %}disabled{% endif %}" data-size="{{ size }}">
+                        {{ size }} {% if stock == 0 %}(Out of Stock){% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </form>
+            <div class="nike-desc-section">
+                <p>[Destination 1 product description goes here.]</p>
+                <ul>
+                    <li>Colour Shown: Pink/Gold/White</li>
+                    <li>Style: ATH-PRO-X1-DEST1</li>
+                    <li>Country/Region of Origin: Philippines</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script id="size-stock-data-1" type="application/json">
+  {{ size_stock | tojson }}
+</script>
+<script>
+const sizeStock1 = JSON.parse(document.getElementById("size-stock-data-1").textContent);
+const sizeOptions1 = document.querySelectorAll('#sizeGrid1 .nike-size-option');
+const stockDisplay1 = document.getElementById("stockDisplay1");
+const addToCartBtn1 = document.getElementById('addToCartBtn1');
+const buyNowBtn1 = document.getElementById('buyNowBtn1');
+let selectedSize1 = null;
+
+function updateStockDisplay1(selectedSize) {
+    const stock = sizeStock1[selectedSize] || 0;
+    if (stock === 0) {
+        stockDisplay1.innerHTML = `<span style="color:red;">Sorry, size ${selectedSize} is out of stock!</span>`;
+        addToCartBtn1.disabled = true;
+        buyNowBtn1.disabled = true;
+        document.getElementById('addToCartSize1').value = '';
+        document.getElementById('buyNowSize1').value = '';
+    } else {
+        stockDisplay1.textContent = "Stock: " + stock;
+        addToCartBtn1.disabled = false;
+        buyNowBtn1.disabled = false;
+        document.getElementById('addToCartSize1').value = selectedSize;
+        document.getElementById('buyNowSize1').value = selectedSize;
+    }
+}
+
+sizeOptions1.forEach(option => {
+    option.addEventListener('click', function () {
+        if (option.classList.contains('disabled')) return;
+        const selected = this.dataset.size;
+        if (sizeStock1[selected] === 0) return;
+
+        sizeOptions1.forEach(o => o.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedSize1 = selected;
+        updateStockDisplay1(selectedSize1);
+    });
+});
+
+// On page load, select the first in-stock size, and disable buttons if none
+window.addEventListener("DOMContentLoaded", function () {
+    let found = false;
+    for (let option of sizeOptions1) {
+        const sz = option.dataset.size;
+        if (sizeStock1[sz] > 0) {
+            option.classList.add('selected');
+            selectedSize1 = sz;
+            updateStockDisplay1(selectedSize1);
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        addToCartBtn1.disabled = true;
+        buyNowBtn1.disabled = true;
+        stockDisplay1.innerHTML = `<span style="color:red;">All sizes are out of stock!</span>`;
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}GCash Payment Details{% endblock %}
+
+{% block content %}
+<style>
+.gcash-popup-card {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 6px 32px 0 rgba(0,0,0,0.13), 0 1.5px 6px 0 rgba(0,0,0,0.09);
+  border: 2px solid #111;
+  max-width: 430px;
+  margin: 50px auto;
+  overflow: hidden;
+  transition: box-shadow .2s;
+}
+.gcash-popup-header {
+  background: #0077c5;
+  padding: 28px 20px 20px 20px;
+  text-align: center;
+}
+.gcash-popup-header img {
+  height: 100px;
+  max-width: 100%;
+}
+.gcash-popup-form {
+  padding: 36px 28px 28px 28px;
+}
+.gcash-field-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #222;
+}
+.gcash-popup-input {
+  border: 2px solid #2652a1;
+  border-radius: 40px;
+  padding: 15px 22px;
+  width: 100%;
+  font-size: 1.22rem;
+  margin-bottom: 7px;
+  transition: border-color .2s;
+  outline: none;
+  background: #fff;
+  color: #222;
+  text-transform: uppercase;
+}
+.gcash-popup-input:focus {
+  border-color: #0077c5;
+  box-shadow: 0 0 0 2px #b5e2fd;
+  background: #fff;
+}
+.gcash-popup-input.invalid {
+  border-color: #dc2727 !important;
+}
+.gcash-form-text {
+  color: #4183a9;
+  font-size: 1rem;
+  margin-top: 0;
+  margin-bottom: 15px;
+  margin-left: 2px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+.gcash-popup-btn {
+  display: block;
+  width: 90%;
+  margin: 26px auto 0 auto;
+  background: #275bdc;
+  color: #222;
+  font-size: 1.18rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 22px;
+  padding: 15px 0 13px 0;
+  box-shadow: 0 6px 0 0 #12114b;
+  cursor: pointer;
+  transition: background .18s, box-shadow .18s;
+}
+.gcash-popup-btn:hover, .gcash-popup-btn:focus {
+  background: #4183a9;
+  box-shadow: 0 10px 16px 0 rgba(58,140,124,0.18);
+}
+.gcash-popup-footer {
+  text-align: center;
+  margin-top: 16px;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // GCash Number: Only allow digits, exactly 11 digits, must start with 09, else show red border
+  const gcashNumber = document.getElementById('gcash_number');
+  const gcashForm = document.querySelector('.gcash-popup-form');
+  const gcashName = document.getElementById('gcash_name');
+
+  function validateNumber() {
+    const val = gcashNumber.value;
+    const isValid = /^09\d{9}$/.test(val);
+    if (!isValid) {
+      gcashNumber.classList.add('invalid');
+    } else {
+      gcashNumber.classList.remove('invalid');
+    }
+    return isValid;
+  }
+
+  function validateName() {
+    // Require at least two names, each at least 2 chars
+    const val = gcashName.value.trim();
+    const words = val.split(/\s+/);
+    const isValid = words.length >= 2 && words.every(word => word.length > 1);
+    if (!isValid) {
+      gcashName.classList.add('invalid');
+    } else {
+      gcashName.classList.remove('invalid');
+    }
+    return isValid;
+  }
+
+  // Only allow input starting with 09 and limit to 11 digits
+  gcashNumber.addEventListener('input', function () {
+    let v = this.value.replace(/\D/g, '');
+    if (v.length === 1 && v !== '0') v = '';
+    if (v.length === 2 && v !== '09') v = '09';
+    if (!v.startsWith('09')) v = '09';
+    this.value = v.slice(0, 11);
+    validateNumber();
+  });
+
+  // Force upper case and validate name
+  gcashName.addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+    validateName();
+  });
+
+  gcashForm.addEventListener('submit', function(e) {
+    let valid = true;
+    if (!validateNumber()) valid = false;
+    if (!validateName()) valid = false;
+    if (!valid) {
+      e.preventDefault();
+      if (gcashNumber.classList.contains('invalid')) gcashNumber.focus();
+      else if (gcashName.classList.contains('invalid')) gcashName.focus();
+    }
+  });
+});
+</script>
+
+<div class="gcash-popup-card">
+  <div class="gcash-popup-header">
+    <img src="{{ url_for('static', filename='pictures/gcash_header.png') }}" alt="GCash">
+  </div>
+  <form class="gcash-popup-form" method="post" action="{{ url_for('gcash_details') }}" autocomplete="off" novalidate>
+    <label for="gcash_number" class="gcash-field-label">Gcash Mobile Number</label>
+    <input type="tel" class="gcash-popup-input" id="gcash_number" name="gcash_number" required maxlength="11" placeholder="09123456789" autocomplete="off">
+    <div class="gcash-form-text">Enter your 11-digit GCash mobile number starting with 09</div>
+
+    <label for="gcash_name" class="gcash-field-label">Gcash Account Name</label>
+    <input type="text" class="gcash-popup-input" id="gcash_name" name="gcash_name" required placeholder="Full Name" autocomplete="off">
+
+    <button type="submit" class="gcash-popup-btn">Continue</button>
+  </form>
+  <div class="gcash-popup-footer">
+    <a href="{{ url_for('checkout_info') }}">&#8592; Back to Checkout</a>
+  </div>
+</div>
+{% endblock %}

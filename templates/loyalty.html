@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}ATHLETO Loyalty Program{% endblock %}
+
+{% block content %}
+<section class="loyalty-program py-5">
+  <div class="container">
+    <h1 class="text-center mb-4">Join the ATHLETO Loyalty Club!</h1>
+    <p class="lead text-center mb-5">
+      Because your passion for sports deserves rewards.
+    </p>
+
+    <div class="row text-center">
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm p-4 h-100">
+          <img src="{{ url_for('static', filename='pictures/rewards.png') }}" alt="Rewards" class="mb-3" style="height:200px;">
+          <h3>Earn Points on Every Purchase</h3>
+          <p>Get 1 point for every $1 spent. Redeem points for exclusive discounts and merchandise.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm p-4 h-100">
+          <img src="{{ url_for('static', filename='pictures/member_perks.png') }}" alt="Member Perks" class="mb-3" style="height:200px;">
+          <h3>Exclusive Member-Only Perks</h3>
+          <p>Early access to new products, special sales, and invites to ATHLETO events.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm p-4 h-100">
+          <img src="{{ url_for('static', filename='pictures/community.png') }}" alt="Community" class="mb-3" style="height:200px;">
+          <h3>Join a Thriving Community</h3>
+          <p>Connect with fellow athletes, share tips, and stay inspired with ATHLETO’s online community.</p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-5">
+
+    <h2 class="text-center mb-4">How to Join</h2>
+    <ol class="list-group list-group-numbered mx-auto" style="max-width: 600px;">
+      <li class="list-group-item">Sign up for an ATHLETO account.</li>
+      <li class="list-group-item">Shop your favorite sports gear and apparel.</li>
+      <li class="list-group-item">Earn points and unlock amazing rewards!</li>
+    </ol>
+
+    <div class="text-center mt-5">
+      <a href="{{ url_for('loyalty') }}" class="btn btn-lg btn-success px-5">Become a Member Today</a>
+    </div>
+
+    <p class="text-muted text-center mt-4 small">
+      * Points expire after 12 months of inactivity. See our <a href="{{ url_for('loyalty') }}">terms & conditions</a> for details.
+    </p>
+  </div>
+</section>
+{% endblock %}

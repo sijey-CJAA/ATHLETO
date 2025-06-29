@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block title %}Order Tracking{% endblock %}
+{% block content %}
+<style>
+.tracker-container {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  background: #121212;
+  color: #e0e0e0;
+  padding: 25px 15px 30px 15px;
+  border-radius: 10px;
+}
+.tracker-header {
+  color: #90caf9;
+  text-align: center;
+  margin-bottom: 30px;
+}
+.tracker-status-steps {
+  display: flex;
+  justify-content: space-between;
+  margin: 30px 0 20px 0;
+  gap: 5px;
+}
+.tracker-step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+.tracker-step-circle {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 10px auto;
+  border-radius: 50%;
+  line-height: 40px;
+  font-weight: bold;
+  background: #222;
+  color: #90caf9;
+  border: 2px solid #90caf9;
+  font-size: 1.1em;
+  transition: background .25s, color .25s;
+}
+.tracker-step.active .tracker-step-circle {
+  background: #90caf9;
+  color: #121212;
+}
+.tracker-step.done .tracker-step-circle {
+  background: linear-gradient(135deg,#90caf9 60%,#4e9dd6 100%);
+  color: #121212;
+  border-color: #90caf9;
+}
+.tracker-step-label {
+  font-size: 1.01em;
+  color: #e0e0e0;
+  margin-top: 4px;
+}
+.tracker-step.active .tracker-step-label,
+.tracker-step.done .tracker-step-label {
+  color: #90caf9;
+  font-weight: bold;
+}
+.tracker-order-info {
+  background: #181e26;
+  border-radius: 6px;
+  padding: 18px 15px;
+  margin-bottom: 25px;
+  font-size: 1.07em;
+  color: #cfd8dc;
+}
+.tracker-order-info span {
+  color: #90caf9;
+  font-weight: 500;
+}
+@media (max-width: 600px) {
+  .tracker-status-steps {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+</style>
+ 
+<div class="tracker-container">
+  <h1 class="tracker-header">Order Tracking</h1>
+  <div class="tracker-order-info" id="orderInfo">
+    <div><b>Order Number:</b> <span id="orderId">{{ order_id }}</span></div>
+    <div><b>Order Time:</b> <span id="orderTime"></span></div>
+    <div><b>Email:</b> <span id="orderEmail">{{ order_email }}</span></div>
+  </div>
+  <div class="tracker-status-steps" id="statusSteps">
+    <div class="tracker-step" id="step-0">
+      <div class="tracker-step-circle">1</div>
+      <div class="tracker-step-label">Order Placed</div>
+    </div>
+    <div class="tracker-step" id="step-1">
+      <div class="tracker-step-circle">2</div>
+      <div class="tracker-step-label">Processing</div>
+    </div>
+    <div class="tracker-step" id="step-2">
+      <div class="tracker-step-circle">3</div>
+      <div class="tracker-step-label">Shipped</div>
+    </div>
+    <div class="tracker-step" id="step-3">
+      <div class="tracker-step-circle">4</div>
+      <div class="tracker-step-label">Delivered</div>
+    </div>
+  </div>
+  <div style="color:#90caf9; text-align:center; margin-top:30px; font-size:1.1em;" id="trackerStatusMessage"></div>
+</div>
+ 
+<script>
+// Get order timestamp from backend (passed as Jinja variable)
+const orderTimestamp = "{{ order_timestamp }}";
+const t = new Date(orderTimestamp);
+// Show formatted time
+document.getElementById('orderTime').innerText = t.toLocaleString();
+ 
+// Status progression logic: 2 minutes per step
+function updateTracker() {
+  const now = new Date();
+  const orderTime = new Date(orderTimestamp);
+  const diffMins = Math.floor((now - orderTime) / 60000);
+  let activeStep = 0;
+  if (diffMins >= 6) activeStep = 3;
+  else if (diffMins >= 4) activeStep = 2;
+  else if (diffMins >= 2) activeStep = 1;
+  else activeStep = 0;
+ 
+  for (let i = 0; i < 4; ++i) {
+    const step = document.getElementById('step-' + i);
+    step.classList.remove('done', 'active');
+    if (i < activeStep) {
+      step.classList.add('done');
+    } else if (i === activeStep) {
+      step.classList.add('active');
+    }
+  }
+  // Message
+  let msg = "";
+  switch (activeStep) {
+    case 0: msg = "Your order has been placed and is awaiting processing."; break;
+    case 1: msg = "Your order is now being processed."; break;
+    case 2: msg = "Your order has shipped!"; break;
+    case 3: msg = "Your order was delivered! Thank you for shopping at ATHLETO."; break;
+  }
+  document.getElementById('trackerStatusMessage').innerText = msg;
+}
+updateTracker();
+setInterval(updateTracker, 15000); // updates every 15 seconds for smooth demo (adjust to 60000 for 1 min, 120000 for 2 min in prod)
+</script>
+{% endblock %}

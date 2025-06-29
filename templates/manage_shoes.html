@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-white">Shoe Products</h2>
+    {% for id, product_id, name, price, image in products %}
+    <div class="row align-items-center bg-dark mb-3 p-3 rounded">
+        <div class="col-1 text-white">{{ id }}</div>
+        <div class="col-2 text-white">{{ product_id }}</div>
+        <div class="col-4 text-white">{{ name }}</div>
+        <div class="col-2 text-white">₱{{ "%.2f"|format(price) }}</div>
+        <div class="col-1">
+            <img src="{{ url_for('static', filename=image) }}" style="max-width:70px; max-height:70px;" class="rounded">
+        </div>
+        <div class="col-2 text-end">
+            <a href="{{ url_for('manage_shoe_sizes', product_id=product_id) }}" class="btn btn-success w-100">Manage Sizes</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}User Purchases - {{ user.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Purchase History for {{ user.name }} ({{ user.email }})</h1>
+    {% if orders %}
+    <div class="table-responsive d-block d-print-block">
+        <table class="table table-dark table-striped table-bordered align-middle mb-0 admin-table" id="orders-table">
+            <thead class="thead-light">
+                <tr>
+                    <th>Order ID</th>
+                    <th>Timestamp</th>
+                    <th>Contact Name</th>
+                    <th class="hide-on-print">Contact Info</th>
+                    <th class="hide-on-print">Address</th>
+                    <th>Products</th>
+                    <th>Total Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in orders %}
+                <tr>
+                    <td data-label="Order ID">{{ entry.order.id }}</td>
+                    <td data-label="Timestamp">{{ entry.order.timestamp }}</td>
+                    <td data-label="Contact Name">{{ entry.order.name }}</td>
+                    <td data-label="Contact Info" class="hide-on-print">{{ entry.order.contact }}</td>
+                    <td data-label="Address" class="hide-on-print">{{ entry.order.address }}</td>
+                    <td data-label="Products">
+                        <ul style="margin-bottom:0;padding-left:1.1em;">
+                        {% for item in entry['items'] %}
+                          <li>
+                            {{ item.name }} (x{{ item.quantity }}{% if item.size and item.size|lower != 'none' %}, {{ item.size }}{% endif %})
+                            <br>
+                            <span style="font-size:0.92em;">
+                              ₱{{ '%.2f'|format(item.price) }}
+                            </span>
+                          </li>
+                        {% endfor %}
+                        </ul>
+                    </td>
+                    <td data-label="Total Amount">₱{{ '%.2f'|format(entry.order.total_amount) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Card view for mobile, not for print -->
+    <div class="d-block d-md-none d-print-none">
+        {% for entry in orders %}
+        <div class="card mb-3 bg-dark text-light border-light receipt-card">
+            <div class="card-body p-3">
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Order ID</div>
+                    <div class="col-7">{{ entry.order.id }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Timestamp</div>
+                    <div class="col-7">{{ entry.order.timestamp }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Contact Name</div>
+                    <div class="col-7">{{ entry.order.name }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Contact Info</div>
+                    <div class="col-7">{{ entry.order.contact }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Address</div>
+                    <div class="col-7">{{ entry.order.address }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Products</div>
+                    <div class="col-7">
+                        <ul style="margin-bottom:0;padding-left:1.1em;">
+                        {% for item in entry['items'] %}
+                          <li>
+                            {{ item.name }} (x{{ item.quantity }}{% if item.size and item.size|lower != 'none' %}, {{ item.size }}{% endif %})
+                            <br>
+                            <span style="font-size:0.92em;">
+                              ₱{{ '%.2f'|format(item.price) }}
+                            </span>
+                          </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Total Amount</div>
+                    <div class="col-7">₱{{ '%.2f'|format(entry.order.total_amount) }}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+      <div class="alert alert-info mt-4">No purchases found for this user.</div>
+    {% endif %}
+    <a href="{{ url_for('admin_users') }}" class="btn btn-secondary mt-3 no-print">Back to Users</a>
+</div>
+
+<style>
+.receipt-card {
+    border-radius: 0.7rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-width: 1.5px;
+}
+
+/* Print styles */
+@media print {
+    @page {
+        size: portrait;
+        margin: 10mm;
+    }
+    html, body {
+        font-family: Arial, Helvetica, sans-serif !important;
+        background: #fff !important;
+        color: #000 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        zoom: 1;
+    }
+    .no-print,
+    .btn,
+    form,
+    .mb-3,
+    .mb-4,
+    .d-print-none {
+        display: none !important;
+    }
+    .d-print-block {
+        display: block !important;
+    }
+    .table-dark, .bg-dark, .thead-light, #orders-table thead tr, #orders-table tbody tr {
+        background: #fff !important;
+        color: #000 !important;
+    }
+    #orders-table {
+        font-size: 11px !important;
+        width: 100vw !important;
+        table-layout: fixed !important;
+        word-break: break-word;
+        page-break-inside: avoid;
+        border-collapse: collapse !important;
+    }
+    #orders-table th, #orders-table td {
+        padding: 4px 6px !important;
+        word-break: break-word;
+        white-space: pre-line;
+        border: 1px solid #000 !important;
+        color: #000 !important;
+        background: #fff !important;
+    }
+    .hide-on-print {
+        display: none !important;
+    }
+    #orders-table tr {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+    body {
+        background: #fff !important;
+    }
+}
+</style>
+{% endblock %}

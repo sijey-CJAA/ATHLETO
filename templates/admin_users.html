@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+{% block title %}Admin - Users{% endblock %}
+{% block content %}
+<style>
+  /* Table base style for both screen and print */
+  #users-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #22272e;
+    color: #f5f6fa;
+    font-size: 1.08em;
+    font-family: inherit;
+    margin-bottom: 0;
+  }
+  #users-table th,
+  #users-table td {
+    border: 1px solid #3a4048;
+    padding: 5px 15px;
+    text-align: left;
+    vertical-align: middle;
+    background: transparent;
+    font-weight: 400;
+  }
+  #users-table th {
+    background: #23282f;
+    color: #fff;
+    font-size: 1.08em;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  #users-table td {
+    font-size:.8em;
+    color: #f5f6fa;
+  }
+  #users-table tr {
+    background: transparent;
+  }
+  #users-table tr:hover td {
+    background: #23282f;
+    transition: background 0.2s;
+  }
+  /* Badge styles */
+  .badge-yes {
+    background: #24914c;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 5px 16px;
+    font-size: 1em;
+    display: inline-block;
+    min-width: 38px;
+    text-align: center;
+  }
+  .badge-no {
+    background: #656c76;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 5px 16px;
+    font-size: 1em;
+    display: inline-block;
+    min-width: 38px;
+    text-align: center;
+  }
+  /* Action buttons */
+  .action-btn {
+    display: inline-block;
+    font-weight: 600;
+    padding: 8px 22px;
+    margin-right: 7px;
+    margin-bottom: 5px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background .15s;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+  }
+  .action-btn-delete {
+    background: #d13d4a;
+    color: #fff;
+  }
+  .action-btn-delete:hover, .action-btn-delete:focus {
+    background: #a22630;
+  }
+  .action-btn-admin {
+    background: #f7b016;
+    color: #23282f;
+  }
+  .action-btn-admin:hover, .action-btn-admin:focus {
+    background: #c98800;
+    color: #fff;
+  }
+  .action-btn-purchase {
+    background: #19c9ed;
+    color: #23282f;
+  }
+  .action-btn-purchase:hover, .action-btn-purchase:focus {
+    background: #1299b9;
+    color: #fff;
+  }
+  .action-dash {
+    color: #a8b0bb;
+    font-size: 1.4em;
+    margin-right: 18px;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+  /* Responsive for mobile */
+  @media (max-width: 991.98px) {
+    #users-table th, #users-table td {
+      padding: 10px 8px;
+      font-size: 0.95em;
+    }
+    .action-btn {
+      padding: 6px 10px;
+      font-size: 0.97em;
+      margin-bottom: 4px;
+      margin-right: 3px;
+    }
+  }
+  /* Print style: hide Action column */
+  @media print {
+    html, body {
+      background: #fff !important;
+      color: #000 !important;
+      font-family: Arial, Helvetica, sans-serif !important;
+      font-size: 12px !important;
+    }
+    .no-print,
+    .simple-print-btn,
+    .btn,
+    form,
+    .mb-3,
+    .mb-4,
+    .d-print-none {
+      display: none !important;
+    }
+    .d-print-block {
+      display: block !important;
+    }
+    #users-table {
+      width: 100%;
+      border-collapse: collapse !important;
+      background: #fff !important;
+      color: #000 !important;
+      font-size: 12px !important;
+      table-layout: auto !important;
+      margin-bottom: 0;
+    }
+    #users-table th, #users-table td {
+      border: 1px solid #222 !important;
+      background: #fff !important;
+      color: #000 !important;
+      padding: 8px 14px !important;
+      text-align: left;
+      vertical-align: middle;
+      font-size: 12px !important;
+      font-weight: normal;
+      white-space: pre-line;
+      word-break: break-word;
+    }
+    #users-table th {
+      font-weight: bold !important;
+      background: #fff !important;
+      color: #000 !important;
+    }
+    #users-table tr {
+      background: #fff !important;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    #users-table td:before {
+      display: none !important;
+      content: none !important;
+    }
+    /* Hide Action column in print */
+    #users-table th:last-child,
+    #users-table td:last-child {
+      display: none !important;
+    }
+    /* Badges as flat bordered text for print */
+    .badge-yes, .badge-no {
+      background: #fff !important;
+      color: #000 !important;
+      border: 1px solid #222 !important;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 12px !important;
+      padding: 3px 13px !important;
+      min-width: 32px !important;
+      display: inline-block;
+      text-align: center;
+    }
+    /* Action buttons as bordered text for print */
+    .action-btn {
+      color: #000 !important;
+      background: #fff !important;
+      border: 1.5px solid #222 !important;
+      border-radius: 6px;
+      font-size: 12px !important;
+      font-weight: 500;
+      padding: 3px 13px !important;
+      display: inline-block;
+      margin-right: 5px;
+      margin-bottom: 3px;
+      box-shadow: none !important;
+      text-align: center !important;
+      text-decoration: none !important;
+      outline: none !important;
+      cursor: default !important;
+    }
+    .action-dash {
+      color: #666 !important;
+      font-size: 1.3em;
+      margin-right: 14px;
+      font-weight: 600;
+    }
+  }
+</style>
+
+<div class="container mt-4">
+    <h1 class="mb-4">All Users</h1>
+    <!-- Print Button -->
+    <button class="btn btn-success mb-3 no-print" onclick="window.print()">Print PDF</button>
+    <div class="table-responsive d-block d-print-block">
+      <table class="table table-bordered align-middle mb-0 admin-table" id="users-table">
+          <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>Email</th>
+                  <th>Name</th>
+                  <th>Is Admin</th>
+                  <th>Action</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for user in users %}
+              <tr>
+                  <td>{{ user.id }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.name }}</td>
+                  <td>
+                      {% if user.is_admin %}
+                          <span class="badge-yes">Yes</span>
+                      {% else %}
+                          <span class="badge-no">No</span>
+                      {% endif %}
+                  </td>
+                  <td>
+                      {% if not user.is_admin %}
+                          <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}" style="display:inline;">
+                            <button type="submit" class="action-btn action-btn-delete">Delete</button>
+                          </form>
+                          <form method="POST" action="{{ url_for('make_admin', user_id=user.id) }}" style="display:inline;">
+                            <button type="submit" class="action-btn action-btn-admin">Make Admin</button>
+                          </form>
+                          <form method="GET" action="{{ url_for('admin_user_orders', user_id=user.id) }}" style="display:inline;">
+                            <button type="submit" class="action-btn action-btn-purchase">View Purchases</button>
+                          </form>
+                      {% elif user.id != session['user_id'] and user.email != 'admin@athleto.com' %}
+                          <form method="POST" action="{{ url_for('remove_admin', user_id=user.id) }}" style="display:inline;">
+                            <button type="submit" class="action-btn action-btn-delete">Remove Admin</button>
+                          </form>
+                          <form method="GET" action="{{ url_for('admin_user_orders', user_id=user.id) }}" style="display:inline;">
+                            <button type="submit" class="action-btn action-btn-purchase">View Purchases</button>
+                          </form>
+                      {% else %}
+                          <span class="action-dash">-</span>
+                          <form method="GET" action="{{ url_for('admin_user_orders', user_id=user.id) }}" style="display:inline;">
+                            <button type="submit" class="action-btn action-btn-purchase">View Purchases</button>
+                          </form>
+                      {% endif %}
+                  </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+    </div>
+</div>
+{% endblock %}

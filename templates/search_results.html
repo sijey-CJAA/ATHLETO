@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Search results for "{{ query }}"</h2>
+  {% if results %}
+    <div class="row">
+      {% for item in results %}
+        <div class="col-md-4 mb-4">
+          <a href="{{
+                    url_for('women') if item.id == 'women' else
+                    url_for('men') if item.id == 'men' else
+                    url_for('accessories_and_equipments') if item.id == 'accessories' or item.id == 'equipments' else
+                    url_for('shoes') if item.id == 'shoes' else
+
+                    url_for('top1_women') if item.id == 'top1_women' else
+                    url_for('top2_women') if item.id == 'top2_women' else
+                    url_for('top3_women') if item.id == 'top3_women' else
+                    url_for('top4_women') if item.id == 'top4_women' else
+                    url_for('bottoms4_women') if item.id == 'bottoms4_women' else
+                    url_for('bottoms3_women') if item.id == 'bottoms3_women' else
+                    url_for('bottoms2_women') if item.id == 'bottoms2_women' else
+                    url_for('bottoms1_women') if item.id == 'bottoms1_women' else
+                    url_for('compressions1_women') if item.id == 'compressions1_women' else
+                    url_for('compressions2_women') if item.id == 'compressions2_women' else
+                    url_for('compressions3_women') if item.id == 'compressions3_women' else
+                    url_for('compressions4_women') if item.id == 'compressions4_women' else
+                    url_for('dresses1_women') if item.id == 'dresses1_women' else
+                    url_for('dresses2_women') if item.id == 'dresses2_women' else
+                    url_for('dresses3_women') if item.id == 'dresses3_women' else
+                    url_for('dresses4_women') if item.id == 'dresses4_women' else
+
+                    url_for('bottom1_men') if item.id == 'bottom1_men' else
+                    url_for('bottom2_men') if item.id == 'bottom2_men' else
+                    url_for('bottom3_men') if item.id == 'bottom3_men' else
+                    url_for('bottom4_men') if item.id == 'bottom4_men' else
+                    url_for('compression1_men') if item.id == 'compression1_men' else
+                    url_for('compression2_men') if item.id == 'compression2_men' else
+                    url_for('compression3_men') if item.id == 'compression3_men' else
+                    url_for('compression4_men') if item.id == 'compression4_men' else
+                    url_for('terno1_men') if item.id == 'terno1_men' else
+                    url_for('terno2_men') if item.id == 'terno2_men' else
+                    url_for('terno3_men') if item.id == 'terno3_men' else
+                    url_for('terno4_men') if item.id == 'terno4_men' else
+                    url_for('top1_men') if item.id == 'top1_men' else
+                    url_for('top2_men') if item.id == 'top2_men' else
+                    url_for('top3_men') if item.id == 'top3_men' else
+                    url_for('top4_men') if item.id == 'top4_men' else
+
+                    url_for('shoes9') if item.id == 'shoes9' else
+                    url_for('shoes8') if item.id == 'shoes8' else
+                    url_for('shoes7') if item.id == 'shoes7' else
+                    url_for('shoes6') if item.id == 'shoes6' else
+                    url_for('shoes5') if item.id == 'shoes5' else
+                    url_for('shoes4') if item.id == 'shoes4' else
+                    url_for('shoes3') if item.id == 'shoes3' else
+                    url_for('shoes2') if item.id == 'shoes2' else
+                    url_for('shoes1') if item.id == 'shoes1' else
+
+                    url_for('accessories1') if item.id == 'accessories1' else
+                    url_for('accessories2') if item.id == 'accessories2' else
+                    url_for('accessories3') if item.id == 'accessories3' else
+                    url_for('accessories4') if item.id == 'accessories4' else
+                    url_for('equipments1') if item.id == 'equipments1' else
+                    url_for('equipments2') if item.id == 'equipments2' else
+                    url_for('equipments3') if item.id == 'equipments3' else
+                    url_for('equipments4') if item.id == 'equipments4' else
+                    url_for('destination1') if item.id == 'Extra21' else
+                    url_for('destination2') if item.id == 'Extra22' else
+                    url_for('destination3') if item.id == 'Extra23' else
+                    url_for('confirm_purchase', product_id=item.id) }}"
+             style="text-decoration: none; color: inherit;">
+            <div class="card h-100 shadow-sm hover-shadow">
+              <img src="{{ url_for('static', filename=item.image) }}" class="card-img-top" alt="{{ item.name }}" style="object-fit: contain; max-height: 200px;">
+              <div class="card-body text-center">
+                <h5 class="card-title">
+                  {% if item.id == 'women' %}
+                    Women (view all)
+                  {% elif item.id == 'men' %}
+                    Men (view all)
+                  {% elif item.id == 'accessories' or item.id == 'equipments' %}
+                    Accessories & Equipments (view all)
+                  {% elif item.id == 'shoes' %}
+                    Shoes (view all)
+                  {% else %}
+                    {{ item.name }}
+                  {% endif %}
+                </h5>
+              </div>
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No products found.</p>
+  {% endif %}
+  <style>
+    .hover-shadow:hover {
+      box-shadow: 0 8px 40px #80002044, 0 2px 6px #0003;
+      transform: translateY(-4px) scale(1.03);
+      transition: box-shadow 0.24s, transform 0.24s;
+    }
+    .card {
+      transition: box-shadow 0.24s, transform 0.24s;
+      cursor: pointer;
+    }
+  </style>
+{% endblock %}

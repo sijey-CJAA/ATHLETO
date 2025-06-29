@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}BPI Payment Details{% endblock %}
+
+{% block content %}
+<style>
+.bpi-popup-card {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 6px 32px 0 rgba(0,0,0,0.13), 0 1.5px 6px 0 rgba(0,0,0,0.09);
+  border: 2px solid #111;
+  max-width: 430px;
+  margin: 30px auto;
+  overflow: hidden;
+  transition: box-shadow .2s;
+}
+.bpi-popup-header {
+  background: #d0c8c8;
+  padding: 28px 20px 20px 20px;
+  text-align: center;
+}
+.bpi-popup-header img {
+  height: 80px;
+  max-width: 100%;
+}
+.bpi-popup-form {
+  padding: 36px 28px 28px 28px;
+}
+.bpi-field-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #222;
+}
+.bpi-popup-input {
+  border: 2px solid #af8522;
+  border-radius: 40px;
+  padding: 15px 22px;
+  width: 100%;
+  font-size: 1.22rem;
+  margin-bottom: 7px;
+  transition: border-color .2s;
+  outline: none;
+  background: #fff;
+  color: #222;
+  text-transform: uppercase;
+}
+.bpi-popup-input:focus {
+  border-color: #bea91e;
+  box-shadow: 0 0 0 2px #ffd6da;
+  background: #fff;
+}
+.bpi-popup-input.invalid {
+  border-color: #dc2727 !important;
+}
+.bpi-form-text {
+  color: rgb(210, 179, 56);
+  font-size: 1rem;
+  margin-top: 0;
+  margin-bottom: 15px;
+  margin-left: 2px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+.bpi-popup-btn {
+  display: block;
+  width: 90%;
+  margin: 26px auto 0 auto;
+  background: #dc2727;
+  color: #222;
+  font-size: 1.18rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 22px;
+  padding: 15px 0 13px 0;
+  box-shadow: 0 6px 0 0 #dfc428;
+  cursor: pointer;
+  transition: background .18s, box-shadow .18s;
+}
+.bpi-popup-btn:hover, .bpi-popup-btn:focus {
+  background: #aa9b12;
+  box-shadow: 0 10px 16px 0 rgba(58,140,124,0.18);
+}
+.bpi-popup-footer {
+  text-align: center;
+  margin-top: 16px;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // BPI Account Number: Only allow digits and exactly 10 digits, else show red border
+  const bpiNumber = document.getElementById('bpi_account_number');
+  const bpiForm = document.querySelector('.bpi-popup-form');
+  const bpiName = document.getElementById('bpi_account_name');
+
+  function validateAccountNumber() {
+    const val = bpiNumber.value;
+    const isValid = /^\d{10}$/.test(val);
+    if (!isValid) {
+      bpiNumber.classList.add('invalid');
+    } else {
+      bpiNumber.classList.remove('invalid');
+    }
+    return isValid;
+  }
+
+  function validateName() {
+    // Require at least two names, each at least 2 chars
+    const val = bpiName.value.trim();
+    const words = val.split(/\s+/);
+    const isValid = words.length >= 2 && words.every(word => word.length > 1);
+    if (!isValid) {
+      bpiName.classList.add('invalid');
+    } else {
+      bpiName.classList.remove('invalid');
+    }
+    return isValid;
+  }
+
+  // Prevent typing non-digits and limit to 10 chars
+  bpiNumber.addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '').slice(0, 10);
+    validateAccountNumber();
+  });
+
+  // Force upper case and validate name
+  bpiName.addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+    validateName();
+  });
+
+  bpiForm.addEventListener('submit', function(e) {
+    let valid = true;
+    if (!validateAccountNumber()) valid = false;
+    if (!validateName()) valid = false;
+    // If any input is invalid, prevent submit
+    if (!valid) {
+      e.preventDefault();
+      // Focus the first invalid field
+      if (bpiNumber.classList.contains('invalid')) bpiNumber.focus();
+      else if (bpiName.classList.contains('invalid')) bpiName.focus();
+    }
+  });
+});
+</script>
+
+<div class="bpi-popup-card">
+  <div class="bpi-popup-header">
+    <img src="{{ url_for('static', filename='pictures/bpi.png') }}" alt="BPI">
+  </div>
+  <form class="bpi-popup-form" method="post" action="{{ url_for('bpi_details') }}" autocomplete="off" novalidate>
+    <label for="bpi_account_number" class="bpi-field-label">BPI Account Number</label>
+    <input type="text" class="bpi-popup-input" id="bpi_account_number" name="bpi_account_number" required maxlength="10" placeholder="e.g. 1234567890" autocomplete="off">
+    <div class="bpi-form-text">Enter your 10-digit BPI account number</div>
+
+    <label for="bpi_account_name" class="bpi-field-label">BPI Account Name</label>
+    <input type="text" class="bpi-popup-input" id="bpi_account_name" name="bpi_account_name" required placeholder="Full Name as registered in BPI" autocomplete="off">
+
+    <button type="submit" class="bpi-popup-btn">Continue</button>
+  </form>
+  <div class="bpi-popup-footer">
+    <a href="{{ url_for('checkout_info') }}">&#8592; Back to Checkout</a>
+  </div>
+</div>
+{% endblock %}

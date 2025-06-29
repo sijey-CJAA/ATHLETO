@@ -1,0 +1,6 @@
+{
+    "test1@athleto.com": {
+        "password": "scrypt:32768:8:1$WADdStBv1TjMWTal$9b04bda4885d5f4d457f77935343f5e2a2bdf6a95d1fd25de5e68dcd0b0ea31c03b74b8581282e28f4e9753455f39a84abf874827d894599fc9f5beeb5bbf92d",
+        "name": "ATHLETO"
+    }
+}

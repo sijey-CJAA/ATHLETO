@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Product Feedback - Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">Product Feedback</h2>
+  {% if feedback_list and feedback_list|length > 0 %}
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Order ID</th>
+          <th>User</th>
+          <th>Rating</th>
+          <th>Comment</th>
+          <th>Date Submitted</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for fb in feedback_list %}
+        <tr>
+          <td>{{ fb['order_id'] }}</td>
+          <td>{{ fb['user'] }}</td>
+          <td>
+            <span class="badge bg-warning text-dark">{{ fb['rating'] }} / 5</span>
+          </td>
+          <td>{{ fb['comment'] }}</td>
+          <td>{{ fb['submitted_at'] if fb['submitted_at'] is defined else '' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-info">No product feedback has been submitted yet.</div>
+  {% endif %}
+  <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary mt-3">Back to Admin Dashboard</a>
+</div>
+{% endblock %}

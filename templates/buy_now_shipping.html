@@ -1,0 +1,486 @@
+{% extends "base.html" %}
+{% block title %}Shipping & Contact Information{% endblock %}
+{% block content %}
+<style>
+  .checkout-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+  }
+  .checkout-card {
+    background: rgba(30, 32, 38, 0.97);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    padding: 2.5rem 2rem 1.5rem 2rem;
+    max-width: 540px;
+    width: 100%;
+    margin: 0 auto;
+    border: 1.5px solid #343a40;
+  }
+  .checkout-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+  .checkout-title-emoji {
+    font-size: 2.2rem;
+    filter: drop-shadow(0 2px 8px #2226);
+  }
+  .checkout-grantotal {
+    font-size: 1.24rem;
+    color: #7fffd4;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 1.7rem;
+    letter-spacing: 1px;
+  }
+  .payment-options-group {
+    background: rgba(44, 47, 56, 0.95);
+    border-radius: 10px;
+    padding: 1.2rem 1rem 1rem 1rem;
+    margin-bottom: 1.4rem;
+    border: 1px solid #343a40;
+  }
+  .form-check.payment-radio {
+    padding: 0.65rem 0.85rem;
+    margin-bottom: 0.45rem;
+    border-radius: 7px;
+    background: rgba(70, 75, 90, 0.12);
+    transition: background 0.2s, border 0.2s;
+    border: 1px solid transparent;
+    cursor: pointer;
+    align-items: center;
+  }
+  .form-check.payment-radio.selected,
+  .form-check.payment-radio:hover {
+    background: rgba(127,255,212,0.10);
+    border: 1.5px solid #7fffd4;
+  }
+  .payment-details {
+    background: rgba(127,255,212,0.07);
+    border-left: 3px solid #7fffd4;
+    margin-bottom: 0.7rem;
+    padding: 0.7rem 1.2rem 0.7rem 1.2rem;
+    border-radius: 8px;
+    margin-left: 30px;
+    max-width: 350px;
+  }
+  .payment-details label {
+    color: #a7ffeb;
+    font-weight: 500;
+  }
+  @media (max-width: 600px) {
+    .checkout-card { padding: 1.2rem 0.7rem 0.5rem 0.7rem; }
+    .checkout-title { font-size: 1.2rem; }
+    .payment-options-group { padding: 0.7rem 0.5rem 0.5rem 0.5rem; }
+    .payment-details { padding: 0.5rem 0.5rem 0.5rem 0.7rem; }
+  }
+  .is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, .25);
+  }
+</style>
+
+<div class="checkout-center">
+  <div class="checkout-card">
+    <div class="checkout-title">
+      <h2 class="m-0" style="font-weight:700; letter-spacing:1px;">Shipping &amp; Contact Information</h2>
+    </div>
+    <form method="POST" action="{{ url_for('buy_now_shipping', product_id=product_id) }}" id="shippingForm" autocomplete="off">
+      <!-- Hidden fields to pass product details to confirmation step -->
+      <input type="hidden" name="size" value="{{ size }}">
+      <input type="hidden" name="quantity" value="{{ quantity }}">
+
+      <div class="row g-3" style="max-width:500px; margin:0 auto;">
+        <div class="col-md-6">
+          <label for="name" class="form-label">Full Name</label>
+          <input type="text" id="name" name="name" class="form-control" required value="{{ name|default('') }}" placeholder="Your Name">
+        </div>
+        <div class="col-md-6">
+          <label for="contact" class="form-label">Contact Number</label>
+          <div class="input-group">
+            <span class="input-group-text" id="phi-prefix">+63</span>
+            <input type="tel" id="contact" name="contact" class="form-control" required pattern="\d{10}" maxlength="10" minlength="10"
+              inputmode="numeric" aria-describedby="phi-prefix" placeholder="9123456789" value="{{ contact|default('') }}">
+          </div>
+          <div class="form-text">Enter 10 digits (e.g., 9123456789)</div>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Address</label>
+          <div class="row g-2">
+            <div class="col-md-3">
+              <label for="region" class="form-label">Region</label>
+              <select id="region" name="region" class="form-select" required>
+                <option value="">Select Region</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="province" class="form-label">Province</label>
+              <select id="province" name="province" class="form-select" required disabled>
+                <option value="">Select Province</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="city" class="form-label">City</label>
+              <select id="city" name="city" class="form-select" required disabled>
+                <option value="">Select City/Municipality</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="barangay" class="form-label">Barangay</label>
+              <select id="barangay" name="barangay" class="form-select" required disabled>
+                <option value="">Select Barangay</option>
+              </select>
+            </div>
+          </div>
+          <div class="row g-2 mt-2">
+            <div class="col-md-8">
+              <label for="home_number" class="form-label">House/Unit/Building/Street</label>
+              <input type="text" id="home_number" name="home_number" class="form-control" required placeholder="e.g. 123-B Main St.">
+            </div>
+          </div>
+
+          <!-- Payment Method Section -->
+          <div class="mt-4 payment-options-group">
+            <label class="form-label" style="font-weight:600;">Mode of Payment</label>
+            <div class="mb-1" style="font-size:1.05rem;">Online Payment:</div>
+
+            <div class="form-check d-flex align-items-center payment-radio mb-2">
+              <input class="form-check-input me-2" type="radio" name="payment_mode" id="gcash" value="gcash" required>
+              <label class="form-check-label d-flex align-items-center" for="gcash">
+                <img src="{{ url_for('static', filename='pictures/gcashlogo.png') }}" alt="GCash Logo"
+                  style="height:40px; width:40px; object-fit:contain; background:#fff; border-radius:6px; margin-right:8px;">
+                GCash
+              </label>
+            </div>
+            <div id="gcash-details" class="mb-2 payment-details" style="display:none;">
+              <div class="mb-2">
+                <label for="gcash_number" class="form-label mb-1">GCash Number</label>
+                <input type="text" class="form-control"
+                  name="gcash_number" id="gcash_number"
+                  maxlength="11" minlength="11"
+                  pattern="09\d{9}"
+                  title="GCash number must start with 09 and be 11 digits."
+                  placeholder="e.g. 09XXXXXXXXX">
+              </div>
+              <div>
+                <label for="gcash_name" class="form-label mb-1">Account Name</label>
+                <input type="text" class="form-control" name="gcash_name" id="gcash_name" placeholder="Account Name">
+              </div>
+            </div>
+
+            <div class="form-check d-flex align-items-center payment-radio mb-2">
+              <input class="form-check-input me-2" type="radio" name="payment_mode" id="paymaya" value="paymaya">
+              <label class="form-check-label d-flex align-items-center" for="paymaya">
+                <img src="{{ url_for('static', filename='pictures/PayMayaLogo.png') }}" alt="PayMaya Logo"
+                  style="height:40px; width:40px; object-fit:contain; background:#fff; border-radius:6px; margin-right:8px;">
+                PayMaya
+              </label>
+            </div>
+            <div id="paymaya-details" class="mb-2 payment-details" style="display:none;">
+              <div class="mb-2">
+                <label for="paymaya_number" class="form-label mb-1">PayMaya Number</label>
+                <input type="text" class="form-control"
+                  name="paymaya_number" id="paymaya_number"
+                  maxlength="11" minlength="11"
+                  pattern="09\d{9}"
+                  title="PayMaya number must start with 09 and be 11 digits."
+                  placeholder="e.g. 09XXXXXXXXX">
+              </div>
+              <div>
+                <label for="paymaya_name" class="form-label mb-1">Account Name</label>
+                <input type="text" class="form-control" name="paymaya_name" id="paymaya_name" placeholder="Account Name">
+              </div>
+            </div>
+
+            <div class="form-check d-flex align-items-center payment-radio mb-2">
+              <input class="form-check-input me-2" type="radio" name="payment_mode" id="bdo" value="bdo">
+              <label class="form-check-label d-flex align-items-center" for="bdo">
+                <img src="{{ url_for('static', filename='pictures/BDOlogo.png') }}" alt="BDO Logo"
+                  style="height:40px; width:40px; object-fit:contain; background:#fff; border-radius:6px; margin-right:8px;">
+                BDO
+              </label>
+            </div>
+            <div id="bdo-details" class="mb-2 payment-details" style="display:none;">
+              <div class="mb-2">
+                <label for="bdo_account_number" class="form-label mb-1">Account Number</label>
+                <input type="text" class="form-control"
+                  name="bdo_account_number" id="bdo_account_number"
+                  maxlength="12" minlength="10"
+                  pattern="\d{10,12}"
+                  title="BDO account number must be 10 to 12 digits."
+                  placeholder="Account Number">
+              </div>
+              <div>
+                <label for="bdo_account_name" class="form-label mb-1">Account Name</label>
+                <input type="text" class="form-control" name="bdo_account_name" id="bdo_account_name" placeholder="Account Name">
+              </div>
+            </div>
+
+            <div class="form-check d-flex align-items-center payment-radio mb-2">
+              <input class="form-check-input me-2" type="radio" name="payment_mode" id="bpi" value="bpi">
+              <label class="form-check-label d-flex align-items-center" for="bpi">
+                <img src="{{ url_for('static', filename='pictures/bpilogoo.png') }}" alt="BPI Logo"
+                  style="height:40px; width:40px; object-fit:contain; background:#fff; border-radius:6px; margin-right:8px;">
+                BPI
+              </label>
+            </div>
+            <div id="bpi-details" class="mb-2 payment-details" style="display:none;">
+              <div class="mb-2">
+                <label for="bpi_account_number" class="form-label mb-1">Account Number</label>
+                <input type="text" class="form-control"
+                  name="bpi_account_number" id="bpi_account_number"
+                  maxlength="12" minlength="10"
+                  pattern="\d{10,12}"
+                  title="BPI account number must be 10 to 12 digits."
+                  placeholder="Account Number">
+              </div>
+              <div>
+                <label for="bpi_account_name" class="form-label mb-1">Account Name</label>
+                <input type="text" class="form-control" name="bpi_account_name" id="bpi_account_name" placeholder="Account Name">
+              </div>
+            </div>
+
+            <div class="mb-1 mt-3" style="font-size:1.05rem;">Cash on Delivery:</div>
+            <div class="form-check payment-radio d-flex align-items-center">
+              <input class="form-check-input" type="radio" name="payment_mode" id="cod" value="cod">
+              <label class="form-check-label" for="cod"><b>COD</b></label>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary">Continue</button>
+        </div>
+      </div>
+    </form>
+    <a href="{{ url_for('home') }}" class="btn btn-link mt-3"><span>Cancel</span></a>
+  </div>
+</div>
+
+<script>
+  // Highlight selected radio payment option and show/hide fields
+  document.querySelectorAll('input[name="payment_mode"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      document.querySelectorAll('.payment-details').forEach(function(div) {
+        div.style.display = 'none';
+      });
+      document.querySelectorAll('.form-check.payment-radio').forEach(function(item) {
+        item.classList.remove('selected');
+      });
+      if (this.checked) {
+        var detailDiv = document.getElementById(this.value + '-details');
+        if (detailDiv) detailDiv.style.display = 'block';
+        this.closest('.form-check.payment-radio').classList.add('selected');
+      }
+    });
+  });
+
+  // GCash and PayMaya field validation: only allow numbers, must start with 09, max 11 digits
+  document.getElementById('gcash_number').addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);
+    if(this.value.length > 0 && !this.value.startsWith('09')) {
+      this.value = '09' + this.value.slice(2,11);
+    }
+  });
+  document.getElementById('paymaya_number').addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);
+    if(this.value.length > 0 && !this.value.startsWith('09')) {
+      this.value = '09' + this.value.slice(2,11);
+    }
+  });
+  // BDO field validation
+  document.getElementById('bdo_account_number').addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 12);
+  });
+  // BPI field validation
+  document.getElementById('bpi_account_number').addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 12);
+  });
+
+  // Full Name validation
+  const nameInput = document.getElementById('name');
+  function validateNameInput() {
+    if (nameInput.value.trim() === '') {
+      nameInput.classList.add('is-invalid');
+    } else {
+      nameInput.classList.remove('is-invalid');
+    }
+  }
+  nameInput.addEventListener('input', validateNameInput);
+  nameInput.addEventListener('blur', validateNameInput);
+
+  // Home/Unit/Building/Street validation
+  const homeNumberInput = document.getElementById('home_number');
+  function validateHomeNumberInput() {
+    if (homeNumberInput.value.trim() === '') {
+      homeNumberInput.classList.add('is-invalid');
+    } else {
+      homeNumberInput.classList.remove('is-invalid');
+    }
+  }
+  homeNumberInput.addEventListener('input', validateHomeNumberInput);
+  homeNumberInput.addEventListener('blur', validateHomeNumberInput);
+
+  // Contact number validation
+  const contactInput = document.getElementById('contact');
+  function validateContactInput() {
+    let value = contactInput.value.replace(/[^0-9]/g, '');
+    value = value.slice(0, 10);
+    if (value.length > 0 && value[0] !== '9') {
+      value = value.slice(1);
+    }
+    contactInput.value = value;
+    if (value.length !== 10) {
+      contactInput.classList.add('is-invalid');
+    } else {
+      contactInput.classList.remove('is-invalid');
+    }
+  }
+  contactInput.addEventListener('input', validateContactInput);
+  contactInput.addEventListener('blur', validateContactInput);
+
+  // Optionally, validate all on form submit
+  const form = document.getElementById('shippingForm');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      validateNameInput();
+      validateContactInput();
+      validateHomeNumberInput();
+      if (
+        nameInput.classList.contains('is-invalid') ||
+        contactInput.classList.contains('is-invalid') ||
+        homeNumberInput.classList.contains('is-invalid')
+      ) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  // Cascading address picker with region
+  let addressData = [];
+  fetch('{{ url_for("static", filename="addressData.json") }}')
+    .then(response => response.json())
+    .then(data => {
+      addressData = data;
+      populateRegions();
+    });
+
+  const regionSelect = document.getElementById('region');
+  const provinceSelect = document.getElementById('province');
+  const citySelect = document.getElementById('city');
+  const barangaySelect = document.getElementById('barangay');
+
+  function populateRegions() {
+    const regions = [...new Set(addressData.map(item => item.region))].sort();
+    regionSelect.innerHTML = '<option value="">Select Region</option>';
+    regions.forEach(region => {
+      const option = document.createElement('option');
+      option.value = region;
+      option.textContent = region;
+      regionSelect.appendChild(option);
+    });
+    regionSelect.disabled = false;
+    provinceSelect.innerHTML = '<option value="">Select Province</option>';
+    provinceSelect.disabled = true;
+    citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+    citySelect.disabled = true;
+    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+    barangaySelect.disabled = true;
+  }
+
+  regionSelect.addEventListener('change', function () {
+    const selectedRegion = this.value;
+    if (!selectedRegion) {
+      provinceSelect.innerHTML = '<option value="">Select Province</option>';
+      provinceSelect.disabled = true;
+      citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+      citySelect.disabled = true;
+      barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+      barangaySelect.disabled = true;
+      return;
+    }
+    const provinces = [
+      ...new Set(
+        addressData
+          .filter(item => item.region === selectedRegion)
+          .map(item => item.province)
+      )
+    ].sort();
+    provinceSelect.innerHTML = '<option value="">Select Province</option>';
+    provinces.forEach(province => {
+      const option = document.createElement('option');
+      option.value = province;
+      option.textContent = province;
+      provinceSelect.appendChild(option);
+    });
+    provinceSelect.disabled = false;
+    citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+    citySelect.disabled = true;
+    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+    barangaySelect.disabled = true;
+  });
+
+  provinceSelect.addEventListener('change', function () {
+    const selectedRegion = regionSelect.value;
+    const selectedProvince = this.value;
+    if (!selectedProvince) {
+      citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+      citySelect.disabled = true;
+      barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+      barangaySelect.disabled = true;
+      return;
+    }
+    const cities = [
+      ...new Set(
+        addressData
+          .filter(item => item.region === selectedRegion && item.province === selectedProvince)
+          .map(item => item.city)
+      )
+    ].sort();
+    citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+    cities.forEach(city => {
+      const option = document.createElement('option');
+      option.value = city;
+      option.textContent = city;
+      citySelect.appendChild(option);
+    });
+    citySelect.disabled = false;
+    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+    barangaySelect.disabled = true;
+  });
+
+  citySelect.addEventListener('change', function () {
+    const selectedRegion = regionSelect.value;
+    const selectedProvince = provinceSelect.value;
+    const selectedCity = this.value;
+    if (!selectedCity) {
+      barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+      barangaySelect.disabled = true;
+      return;
+    }
+    const barangays = [
+      ...new Set(
+        addressData
+          .filter(item =>
+            item.region === selectedRegion &&
+            item.province === selectedProvince &&
+            item.city === selectedCity
+          )
+          .map(item => item.barangay)
+      )
+    ].sort();
+    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+    barangays.forEach(barangay => {
+      const option = document.createElement('option');
+      option.value = barangay;
+      option.textContent = barangay;
+      barangaySelect.appendChild(option);
+    });
+    barangaySelect.disabled = false;
+  });
+</script>
+{% endblock %}

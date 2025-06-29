@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Contact Us</h1>
+  
+  <div class="row">
+    <!-- Chat Section -->
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-none bg-transparent">
+        <div class="card-body bg-transparent">
+          <h3 class="card-title">Chat with us</h3>
+          <p class="card-text">8:00 - 23:59<br>7 days a week</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Call Section -->
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-none bg-transparent">
+        <div class="card-body bg-transparent">
+          <h3 class="card-title">Call us</h3>
+          <p class="card-text">
+            1800-16516453 (PLDT)<br>
+            1800-86516453 (GLOBE)<br>
+            
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Dynamic Third Section -->
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-none bg-transparent">
+        <div class="card-body bg-transparent">
+          <!-- Tab Navigation -->
+          <ul class="nav nav-tabs" id="contactTab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="store-tab" data-toggle="tab" href="#store" role="tab">Stores</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="faq-tab" data-toggle="tab" href="#faq" role="tab">FAQ</a>
+            </li>
+            <!-- Feedback is now a direct link! -->
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('feedback') }}">Feedback</a>
+            </li>
+          </ul>
+          
+          <!-- Tab Content -->
+          <div class="tab-content pt-3" id="contactTabContent">
+            <!-- Store Info Tab -->
+            <div class="tab-pane fade show active" id="store" role="tabpanel">
+              <h5>Main Store</h5>
+              <p>123 Sports Ave, ATHLETO BATANGAS<br>
+              <small>Open 9AM-8PM (Mon-Sat)</small></p>
+              <div class="embed-responsive embed-responsive-1by1 mb-2">
+                <iframe 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3861.23456789!2d121.00000000000001!3d14.600000000000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDM2JzAwLjAiTiAxMjHCsDAwJzAwLjAiRQ!5e0!3m2!1sen!2sph!4v1620000000000!5m2!1sen!2sph" 
+                  width="100%" 
+                  height="150" 
+                  style="border:0;" 
+                  allowfullscreen="">
+                </iframe>
+              </div>
+            </div>
+            
+            <!-- Social Media Tab -->
+            <div class="tab-pane fade" id="social" role="tabpanel">
+              <a href="#" class="d-block mb-2"><i class="fab fa-facebook mr-2"></i>Facebook</a>
+              <a href="#" class="d-block mb-2"><i class="fab fa-instagram mr-2"></i>Instagram</a>
+              <a href="#" class="d-block"><i class="fab fa-tiktok mr-2"></i>TikTok</a>
+            </div>
+            
+            <!-- FAQ Tab -->
+            <div class="tab-pane fade" id="faq" role="tabpanel">
+              <p><strong>Returns:</strong> 30-day policy</p>
+              <p><strong>Shipping:</strong> 2-5 days</p>
+              <p><strong>Payments:</strong> GCash, PayMaya, BPI, BDO, COD</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Required Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<style>
+  .nav-tabs .nav-link {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    color: #6c757d;
+  }
+  .nav-tabs .nav-link.active {
+    color: #dc3545;
+    font-weight: bold;
+  }
+  .embed-responsive-1by1 {
+    padding-bottom: 100%;
+  }
+  /* Remove card borders, shadows, and backgrounds */
+  .card, .card-body {
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+</style>
+{% endblock %}

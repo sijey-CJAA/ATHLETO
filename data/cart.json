@@ -1,0 +1,20 @@
+{
+    "test1@athleto.com": [
+        {
+            "product_id": "Extra21",
+            "name": "Pink Pulse",
+            "quantity": 1,
+            "size": "US W 5.5 / M 4",
+            "price": 9895.0,
+            "image": "/static/pictures/latest/pink1.png"
+        },
+        {
+            "product_id": "accessories2",
+            "name": "ACCESSORIES 2",
+            "quantity": 1,
+            "size": "M",
+            "price": 2500.0,
+            "image": "/static/pictures/accessories/accessories2.png"
+        }
+    ]
+}

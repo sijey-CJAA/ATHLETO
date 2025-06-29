@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Fade-in wrapper for the whole section -->
+<div class="fadein-section">
+  <div class="container-fluid p-5 position-relative" style="background: linear-gradient(135deg, maroon 0%, #800020 100%); margin-top: -50px; z-index: 10; border-radius: 20px 20px 0 0; box-shadow: 0 -20px 40px rgba(0,0,0,0.2); transform: perspective(1000px) rotateX(-3deg);">
+      <div class="container">
+       <h1 class="text-center text-white display-3 fw-bold" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.3);">ATHLETO SHOE SECTION</h1>
+      </div>
+      <div class="hero-accent" style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); width: 90%; height: 40px; background: white; border-radius: 50%; filter: blur(20px); opacity: 0.3;"></div>
+  </div>
+
+  <!-- ADD SPACE BELOW HEADER -->
+  <div style="height: 40px;"></div>
+
+  <div class="container mt-5">
+    <div class="row g-4">
+      {% set shoes = [
+        {'name': 'Nebula Violet Hyperthrust X',         'url': '/shoes/shoes1', 'image': 'shoes1.png', 'price': '₱2,595'},
+        {'name': 'Blitzfire Scarlet Accelerator Elite', 'url': '/shoes/shoes2', 'image': 'shoes2.png', 'price': '₱2,595'},
+        {'name': 'EmberGlow Lava Forge',                'url':'/shoes/shoes3', 'image':  'shoes3.png', 'price': '₱2,595'},
+        {'name': 'VelocityRush Cobalt Turboflex',       'url': '/shoes/shoes4', 'image': 'shoes4.png', 'price': '₱2,595'},
+        {'name': 'Flashburst Azure Nitro Igniter',      'url': '/shoes/shoes5', 'image': 'shoes5.png', 'price': '₱2,595'},
+        {'name': 'Crimson Velocity Hyper-Momentum Pro', 'url': '/shoes/shoes6', 'image': 'shoes6.png', 'price': '₱2,595'},
+        {'name': 'Surgeflame Ember Dominator GT',       'url': '/shoes/shoes7', 'image': 'shoes7.png', 'price': '₱2,595'},
+        {'name': 'Quantum Stratus Carbon Flash',        'url': '/shoes/shoes8', 'image': 'shoes8.png', 'price': '₱2,595'},
+        {'name': 'FrostBite Arctic Silver',             'url': '/shoes/shoes9', 'image': 'shoes9.png', 'price': '₱2,595'}
+      ] %}
+      
+      {% for i in range(0, shoes|length, 3) %}
+        <div class="row mb-5">  <!-- Increased margin-bottom for row separation -->
+          {% for shoe in shoes[i:i+3] %}
+          <div class="col-md-4 d-flex mb-4">
+            <div class="card w-100 shadow-sm border-2 d-flex flex-column breathing-card" style="height: 400px; border-color: #e0e0e0;">
+              <a href="{{ shoe.url }}" class="text-decoration-none flex-grow-1 d-flex flex-column">
+                <div class="p-3 flex-grow-1 d-flex align-items-center" style="height: 220px; background-color: #f8f9fa;">
+                  <img src="{{ url_for('static', filename='pictures/shoes/' + shoe.image) }}" 
+                       class="img-fluid mx-auto d-block" 
+                       alt="{{ shoe.name }}"
+                       style="max-height: 100%; max-width: 100%; object-fit: contain; padding: 10px;">
+                </div>
+                <div class="card-body text-center d-flex flex-column p-3">
+                  <h5 class="card-title mb-2" style="font-size: 1rem; min-height: 2.5rem;">{{ shoe.name }}</h5>
+                  <div class="d-flex justify-content-between align-items-center mt-auto">
+                    <span class="text-muted small">Available</span>
+                    <span class="fw-bold" style="color: rgb(226, 222, 222);">{{ shoe.price }}</span>
+                  </div>
+                </div>
+                <div class="card-footer bg-white border-top border-2 p-3" style="border-color: #e0e0e0;">
+                  <button class="btn btn-dark w-100 py-2">View Details</button>
+                </div>
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes breathing {
+  0%   { box-shadow: 0 4px 24px 0 rgba(128,0,0,0.10), 0 0 0 0 rgba(128,0,0,0.08); transform: scale(1);}
+  50%  { box-shadow: 0 8px 36px 8px rgba(128,0,0,0.18), 0 0 24px 8px rgba(128,0,0,0.14); transform: scale(1.035);}
+  100% { box-shadow: 0 4px 24px 0 rgba(128,0,0,0.10), 0 0 0 0 rgba(128,0,0,0.08); transform: scale(1);}
+}
+.breathing-card {
+  transition: box-shadow 0.3s, transform 0.3s;
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+.breathing-card:hover,
+.breathing-card:focus-visible {
+  animation: breathing 1.5s cubic-bezier(.4,0,.2,1) infinite;
+  z-index: 2;
+}
+
+/* Fade-in effect for section */
+.fadein-section {
+  opacity: 0;
+  transform: translateY(30px) scale(0.97);
+  animation: fadein-appear 1s cubic-bezier(.42,1.2,.51,1.01) forwards;
+  animation-delay: 0.2s;
+}
+@keyframes fadein-appear {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ATHLETO - Sports Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" href="{{ url_for('static', filename='pictures/logo.ico') }}" type="image/x-icon">
+  <style>
+    /* --- 3D SQUARES BACKGROUND --- */
+    body {
+      padding-top: 56px;
+      background: #15151a;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      z-index: 1;
+    }
+
+    .squares-bg {
+      position: fixed;
+      z-index: -10;
+      /* <<--- MAKE SURE SQUARES ARE BEHIND ALL CONTENT */
+      inset: 0;
+      pointer-events: none;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      perspective: 1100px;
+    }
+
+    .squares-bg .square {
+      position: absolute;
+      width: 340px;
+      height: 340px;
+      background: linear-gradient(135deg, #282a31 70%, #c1121f 100%);
+      border-radius: 28px;
+      opacity: 0.32;
+      filter: blur(0.5px);
+      /* 3D box-shadow and light effects for depth */
+      box-shadow:
+        0 12px 36px 0 rgba(193, 18, 31, 0.15),
+        0 32px 80px 0 rgba(0, 0, 0, 0.19),
+        0 2.5px 28px 0 #fff2
+        /* highlight edge */
+      ;
+      transition:
+        opacity 0.3s,
+        transform 0.8s cubic-bezier(.19, 1, .22, 1),
+        box-shadow 0.5s;
+      /* Add 3D transforms */
+      will-change: transform;
+    }
+
+    .squares-bg .square.s1 {
+      top: -90px;
+      left: -90px;
+      transform: rotateX(20deg) rotateY(-15deg) rotateZ(-7deg) scale(1.08);
+      background: linear-gradient(120deg, #232427 70%, #c1121f 100%);
+      opacity: 0.36;
+    }
+
+    .squares-bg .square.s2 {
+      top: 18vh;
+      left: 6vw;
+      transform: rotateX(-22deg) rotateY(12deg) rotateZ(11deg) scale(0.97);
+      background: linear-gradient(135deg, #33343a 80%, #c1121f 100%);
+      opacity: 0.30;
+    }
+
+    .squares-bg .square.s3 {
+      bottom: 9vh;
+      left: 12vw;
+      transform: rotateX(29deg) rotateY(-13deg) rotateZ(7deg) scale(1.05);
+      background: linear-gradient(120deg, #232427 80%, #232427 100%);
+      opacity: 0.38;
+    }
+
+    .squares-bg .square.s4 {
+      bottom: -72px;
+      right: 7vw;
+      transform: rotateX(-13deg) rotateY(-17deg) rotateZ(-17deg) scale(1.12);
+      background: linear-gradient(135deg, #232427 60%, #c1121f 100%);
+      opacity: 0.32;
+    }
+
+    .squares-bg .square.s5 {
+      top: 22vh;
+      right: 12vw;
+      transform: rotateX(15deg) rotateY(23deg) rotateZ(9deg) scale(0.92);
+      background: linear-gradient(120deg, #33343a 80%, #c1121f 100%);
+      opacity: 0.29;
+    }
+
+    .squares-bg .square.s6 {
+      top: 52vh;
+      left: 59vw;
+      transform: rotateX(-30deg) rotateY(10deg) rotateZ(-11deg) scale(0.95);
+      background: linear-gradient(120deg, #232427 85%, #c1121f 100%);
+      opacity: 0.31;
+    }
+
+    .squares-bg .square.s4::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 55%;
+      height: 55%;
+      border-bottom-right-radius: 26px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(193, 18, 31, 0.24) 100%);
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.9;
+    }
+
+    .squares-bg .square:hover {
+      opacity: 0.55;
+      filter: blur(0px);
+      box-shadow:
+        0 18px 60px 0 rgba(193, 18, 31, 0.33),
+        0 40px 120px 0 rgba(0, 0, 0, 0.24),
+        0 3px 36px 0 #fff3;
+      transform: scale(1.15) rotateX(8deg) rotateY(8deg);
+    }
+
+    @media (max-width: 900px) {
+      .squares-bg .square {
+        width: 150px;
+        height: 150px;
+      }
+    }
+
+    /* --- REST OF YOUR STYLES --- */
+    .hero-section {
+      background-color: maroon;
+      padding: 3rem 0;
+      margin-bottom: 2rem;
+    }
+
+    .category-card {
+      transition: transform 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+
+    .category-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .navbar {
+      transition: transform 0.3s ease-in-out;
+      transform: translateY(0);
+    }
+
+    .navbar.hide {
+      transform: translateY(-100%);
+    }
+
+    .navbar.scrolled {
+      background-color: rgba(33, 37, 41, 0.95) !important;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar .nav-link.user-greeting {
+      color: #f8f9fa !important;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.13s;
+    }
+
+    .navbar .nav-link.user-greeting:hover,
+    .navbar .nav-link.user-greeting:focus {
+      color: #0d6efd !important;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body data-bs-theme="dark">
+  <!-- SQUARES BACKGROUND LAYER -->
+  <div class="squares-bg">
+    <div class="square s1"></div>
+    <div class="square s2"></div>
+    <div class="square s3"></div>
+    <div class="square s4"></div>
+    <div class="square s5"></div>
+    <div class="square s6"></div>
+  </div>
+  <!-- End Squares BG -->
+
+  <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{{ url_for('home') }}">
+        <img src="{{ url_for('static', filename='pictures/3D logo white.png') }}" alt="ATHLETO Logo" width="60"
+          height="60">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+          {% if session.get('is_admin') %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('dashboard') }}">
+                Hi, {{ session.get('name', 'Admin User') }}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin_users') }}">Users</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin_dashboard') }}">Orders</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin_receipts') }}">Receipts</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('view_products_db') }}">Products Database</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin_feedback') }}">Feedback</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin_product_feedback') }}">Product Feedback</a>
+            </li>
+          {% else %}
+            {% if session.get('user') %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('dashboard') }}">
+                Hi, {{ session.get('name', session['user'].split('@')[0])|capitalize }}
+              </a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+            </li>
+            {% endif %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('home') }}#shop-cards">Shop</a>
+            </li>
+          {% endif %}
+        </ul>
+        <!-- Right-aligned Cart Icon for non-admins -->
+        {% if not session.get('is_admin') %}
+        <ul class="navbar-nav mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('view_cart') }}">
+              🛒 Cart
+              {% if cart_count and cart_count > 0 %}
+              <span class="badge bg-success">{{ cart_count }}</span>
+              {% endif %}
+            </a>
+          </li>
+        </ul>
+        {% endif %}
+        <form class="d-flex" role="search" method="get" action="{{ url_for('search') }}">
+          <input class="form-control me-2" type="search" name="q" placeholder="Type here to search" aria-label="Search">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+  <!-- End Navbar -->
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="container mt-3">
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+  <!-- End Flash Messages -->
+
+  <main class="container mt-4" style="padding-top: 20px;">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="container-fluid mt-5 bg-dark text-light px-0">
+    <div class="container py-4">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4 border-top pt-4">
+        <div class="col mb-2">
+          <a href="{{ url_for('home') }}" class="d-flex align-items-center mb-2 link-light text-decoration-none">
+            <img src="{{ url_for('static', filename='pictures/3D logo white.png') }}" alt="ATHLETO Logo" width="40"
+              height="40">
+          </a>
+          <h5 class="text-light mb-0">ATHLETO</h5>
+        </div>
+        <div class="col d-none d-md-block"></div>
+        <div class="col">
+          <h6 class="text-uppercase mb-3">Resources</h6>
+          <ul class="nav flex-column">
+            <li class="nav-item mb-2"><a href="{{ url_for('home') }}" class="nav-link p-0 text-light">Home</a></li>
+          </ul>
+        </div>
+        <div class="col">
+          <h6 class="text-uppercase mb-3">Help</h6>
+          <ul class="nav flex-column">
+            <li class="nav-item mb-2"><a href="{{ url_for('contact') }}" class="nav-link p-0 text-light">Contact</a>
+            </li>
+            <li class="nav-item mb-2"><a href="{{ url_for('orderandship') }}" class="nav-link p-0 text-light">Order and
+                Shipping</a></li>
+            <li class="nav-item mb-2"><a href="{{ url_for('sizechart') }}" class="nav-link p-0 text-light">Size
+                Chart</a></li>
+          </ul>
+        </div>
+        <div class="col">
+          <h6 class="text-uppercase mb-3">Company</h6>
+          <ul class="nav flex-column">
+            <li class="nav-item mb-2"><a href="{{ url_for('about') }}" class="nav-link p-0 text-light">About Us</a></li>
+            <li class="nav-item mb-2"><a href="{{ url_for('termsandcondition') }}" class="nav-link p-0 text-light">Terms
+                And Condition</a></li>
+            <li class="nav-item mb-2"><a href="{{ url_for('privacy') }}" class="nav-link p-0 text-light">Privacy
+                Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col text-center text-secondary small">
+          &copy; {{ 2025 }} ATHLETO. All rights reserved.
+        </div>
+      </div>
+    </div>
+  </footer>
+  <style>
+    footer {
+      font-size: 1rem;
+    }
+
+    footer h6 {
+      font-weight: bold;
+      letter-spacing: 0.06em;
+    }
+
+    footer ul.nav {
+      padding-left: 0;
+    }
+
+    @media (max-width: 767.98px) {
+      footer .row-cols-md-5>* {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+
+      footer h6 {
+        margin-top: 1.5rem;
+      }
+
+      footer .mb-2 {
+        margin-bottom: 0.5rem !important;
+      }
+
+      footer .d-none.d-md-block {
+        display: none !important;
+      }
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Navbar scroll behavior
+    let lastScroll = 0;
+    const navbar = document.querySelector('.navbar');
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+      if (currentScroll <= 0) {
+        navbar.classList.remove('hide');
+        navbar.classList.remove('scrolled');
+        return;
+      }
+      if (currentScroll > lastScroll && !navbar.classList.contains('hide')) {
+        navbar.classList.add('hide');
+      } else if (currentScroll < lastScroll && navbar.classList.contains('hide')) {
+        navbar.classList.remove('hide');
+      }
+      if (currentScroll > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+      lastScroll = currentScroll;
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2>Edit Stock for {{ product_id }}</h2>
+  <form method="post">
+    <div class="mb-3">
+      <label for="stock" class="form-label">Stock</label>
+      <input type="number" min="0" id="stock" name="stock" value="0" class="form-control" required>
+      <div class="form-text">Current stock: <strong>{{ stock }}</strong></div>
+    </div>
+    <div class="mb-3 d-flex gap-2">
+      <button type="submit" name="action" value="set" class="btn btn-success">Set Stock</button>
+      <button type="submit" name="action" value="add" class="btn btn-primary">Add to Stock</button>
+      <a href="{{ url_for('view_products_db') }}" class="btn btn-secondary">Back to Products</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

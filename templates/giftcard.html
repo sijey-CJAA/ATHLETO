@@ -1,0 +1,397 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<style>
+  body {
+    margin: 0;
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .coupon-list {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 0 15px;
+  }
+  .coupon-item {
+    display: flex;
+    align-items: flex-start;
+    background: #1e1e1e;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+    overflow: hidden;
+    transition: transform 0.2s ease;
+  }
+  .coupon-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.9);
+  }
+  .coupon-left {
+    background: #2c2c2c;
+    min-width: 180px;
+    text-align: center;
+    padding: 40px 12px;
+    font-weight: 900;
+    color: #f94144;
+    font-size: 1.6rem;
+    border-right: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    user-select: none;
+  }
+  .coupon-left small {
+    color: #fcfcfc;
+    font-weight: 500;
+    font-size: 1rem;
+    margin-top: 8px;
+  }
+  .coupon-main {
+    flex: 1;
+    padding: 32px 24px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+  }
+  .coupon-main h3 {
+    margin: 0 0 12px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .coupon-main p {
+    margin: 0;
+    font-size: 1rem;
+    color: #ccc;
+    line-height: 1.5;
+  }
+  .coupon-note {
+    font-style: italic;
+    font-size: 0.9rem;
+    color: #f94144;
+    margin-top: 8px;
+  }
+  .coupon-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 160px;
+    padding: 0 20px;
+  }
+  .coupon-btn {
+    background: #f94144;
+    color: #121212;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 16px 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(249, 65, 68, 0.8);
+    transition: background 0.3s ease;
+    user-select: none;
+  }
+  .coupon-btn:hover {
+    background: #d32f2f;
+    box-shadow: 0 6px 18px rgba(211, 47, 47, 0.9);
+  }
+  .coupon-btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-top: 20px solid #b32a34;
+    border-left: 20px solid transparent;
+    border-radius: 0 8px 0 0;
+  }
+
+
+  /* Modal */
+  .modal-bg {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(18, 18, 18, 0.9);
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+  }
+  .modal-content {
+    background: #222;
+    padding: 30px 25px;
+    border-radius: 14px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    color: #eee;
+    position: relative;
+  }
+  .modal-content h4 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #f94144;
+    letter-spacing: 1.2px;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 2rem;
+    color: #f94144;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    user-select: none;
+    transition: color 0.3s ease;
+  }
+  .modal-close:hover {
+    color: #ff6f6f;
+  }
+  #qrcode {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 0 auto 15px;
+  }
+  #couponCode {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #f94144;
+    user-select: all;
+    text-align: center;
+  }
+  .modal-subtext {
+    font-size: 0.95rem;
+    font-style: italic;
+    color: #bb86fc;
+    margin-top: 10px;
+  }
+
+
+  /* Responsive */
+  @media (max-width: 680px) {
+    .coupon-list {
+      padding: 0 2vw;
+    }
+    .coupon-item {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .coupon-left {
+      min-width: 0;
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid #333;
+      padding: 20px 0;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+    }
+    .coupon-action {
+      min-width: 0;
+      padding: 20px 0 0 0;
+      justify-content: center;
+      width: 100%;
+      display: flex;
+    }
+    .coupon-main {
+      padding: 24px 12px 16px 12px;
+      align-items: center;
+      justify-content: center;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      text-align: center;
+    }
+    /* Center the modal content text on mobile */
+    .modal-content {
+      margin: 0 auto;
+      left: 50%;
+      transform: translateX(0);
+      width: 95vw;
+      max-width: 98vw;
+      min-width: unset;
+      padding: 20px 5px;
+    }
+    #couponCode {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      text-align: center;
+    }
+  }
+</style>
+
+
+<div class="coupon-list">
+
+
+  <div class="coupon-item">
+    <div class="coupon-left">
+      Up to 50%<br>OFF
+      <small>COUPON</small>
+    </div>
+    <div class="coupon-main">
+      <h3>Step Into Style for Less – Women's Outlet Sale</h3>
+      <p>Up to 50% OFF on women's trendy shoe styles. Limited time only. <span class="coupon-note">Redeemable only in official ATHLETO stores.</span></p>
+    </div>
+    <div class="coupon-action">
+      <button class="coupon-btn" data-coupon="ATHLETOGIFT25">Get Coupon</button>
+    </div>
+  </div>
+
+
+  <div class="coupon-item">
+    <div class="coupon-left">
+      Up to 50%<br>OFF
+      <small>COUPON</small>
+    </div>
+    <div class="coupon-main">
+      <h3>Huge Savings on Adidas Shoes – Men's Outlet Sale</h3>
+      <p>Up to 50% OFF Adidas men's shoes. Shop before stock runs out. <span class="coupon-note">Redeemable only in official ATHLETO stores.</span></p>
+    </div>
+    <div class="coupon-action">
+      <button class="coupon-btn" data-coupon="ATHLETOADIDAS50">Get Coupon</button>
+    </div>
+  </div>
+
+
+  <div class="coupon-item">
+    <div class="coupon-left">
+      Up to 50%<br>OFF
+      <small>COUPON</small>
+    </div>
+    <div class="coupon-main">
+      <h3>Shop Adidas Sportswear at Up to 50% OFF</h3>
+      <p>Performance-driven sneakers, activewear & accessories. <span class="coupon-note">Redeemable only in official ATHLETO stores.</span></p>
+    </div>
+    <div class="coupon-action">
+      <button class="coupon-btn" data-coupon="ATHLETOSPORT50">Get Coupon</button>
+    </div>
+  </div>
+
+
+  <div class="coupon-item">
+    <div class="coupon-left">
+      $25<br>GIFT CARD
+      <small>IN-STORE ONLY</small>
+    </div>
+    <div class="coupon-main">
+      <h3>Give the Gift of Sport with ATHLETO</h3>
+      <p>Perfect for athletes of all ages. Redeemable exclusively at official ATHLETO stores.</p>
+    </div>
+    <div class="coupon-action">
+      <button class="coupon-btn" data-coupon="ATHLETOSPORT25GC">Get Gift Card</button>
+    </div>
+  </div>
+
+
+  <div class="coupon-item">
+    <div class="coupon-left">
+      $50<br>GIFT CARD
+      <small>IN-STORE ONLY</small>
+    </div>
+    <div class="coupon-main">
+      <h3>Premium ATHLETO Gift Card</h3>
+      <p>Give $50 to your favorite athlete. Redeemable only in official ATHLETO stores.</p>
+    </div>
+    <div class="coupon-action">
+      <button class="coupon-btn" data-coupon="ATHLETOSPORT50GC">Get Gift Card</button>
+    </div>
+  </div>
+
+
+</div>
+
+
+<!-- Modal -->
+<div class="modal-bg" id="modalBg" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+  <div class="modal-content">
+    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <h4 id="modalTitle">Show this QR code at<br>ATHLETO store</h4>
+    <div id="qrcode"></div>
+    <div id="couponCode"></div>
+    <div class="modal-subtext">For in-store redemption only</div>
+  </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  const modalBg = document.getElementById('modalBg');
+  const modalClose = document.getElementById('modalClose');
+  const qrcodeContainer = document.getElementById('qrcode');
+  const couponCodeEl = document.getElementById('couponCode');
+
+
+  document.querySelectorAll('.coupon-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const code = btn.getAttribute('data-coupon');
+      couponCodeEl.textContent = code;
+
+
+      // Clear previous QR code if any
+      qrcodeContainer.innerHTML = '';
+
+
+      // Generate QR code
+      new QRCode(qrcodeContainer, {
+        text: code,
+        width: 180,
+        height: 180,
+        colorDark: "#f94144",
+        colorLight: "#121212",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+
+      // Show modal
+      modalBg.style.display = 'flex';
+      modalBg.focus();
+    });
+  });
+
+
+  modalClose.addEventListener('click', () => {
+    modalBg.style.display = 'none';
+    qrcodeContainer.innerHTML = '';
+  });
+
+
+  // Close modal on background click
+  modalBg.addEventListener('click', e => {
+    if (e.target === modalBg) {
+      modalBg.style.display = 'none';
+      qrcodeContainer.innerHTML = '';
+    }
+  });
+
+
+  // Accessibility: close modal on Escape key
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modalBg.style.display === 'flex') {
+      modalBg.style.display = 'none';
+      qrcodeContainer.innerHTML = '';
+    }
+  });
+</script>
+{% endblock %}
+

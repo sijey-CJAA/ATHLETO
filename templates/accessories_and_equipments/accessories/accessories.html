@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid p-5 mt-5 mb-3" style="background-color: maroon">
+  <h3 class="text-center text-white">ATHLETO ACCESSORIES SECTION</h3>
+  <h5 class="text-center text-white">Your Partner in Every Play</h5>
+</div>
+
+<div class="container">
+  <div class="row g-4">
+    {% for name, endpoint, image in [
+    ('YOGA MAT', 'accessories1', 'accessories/accessories1.png'),
+    ('GYM BAG', 'accessories2', 'accessories/accessories2.png'),
+    ('JUMP ROPE', 'accessories3', 'accessories/accessories3.png'),
+    ('KNEE PAD', 'accessories4', 'accessories/accessories4.png')
+    ] %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+      <div class="card h-100 shadow-sm breathing-card">
+        <a href="{{ url_for(endpoint) if endpoint != '#' else '#' }}" class="text-decoration-none stretched-link">
+          <img src="{{ url_for('static', filename='pictures/' + image) }}" class="card-img-top" alt="{{ name }}"
+            style="height: 320px; object-fit: cover;">
+          <div class="card-body">
+            <h5 class="card-title">{{ name }}</h5>
+            <p class="card-text text-muted">Shop Now</p>
+          </div>
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<div class="mt-3">
+  <a href="{{ url_for('accessories_and_equipments') }}" class="btn btn-outline-secondary">Back to accessories and equipments</a>
+</div>
+
+<style>
+/* Breathing animation effect for cards */
+@keyframes breathing {
+  0%   { box-shadow: 0 4px 24px 0 rgba(128,0,0,0.10), 0 0 0 0 rgba(128,0,0,0.08); transform: scale(1);}
+  50%  { box-shadow: 0 8px 36px 8px rgba(128,0,0,0.18), 0 0 24px 8px rgba(128,0,0,0.14); transform: scale(1.035);}
+  100% { box-shadow: 0 4px 24px 0 rgba(128,0,0,0.10), 0 0 0 0 rgba(128,0,0,0.08); transform: scale(1);}
+}
+.breathing-card {
+  transition: box-shadow 0.3s, transform 0.3s;
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+.breathing-card:hover,
+.breathing-card:focus-visible {
+  animation: breathing 1.5s cubic-bezier(.4,0,.2,1) infinite;
+  z-index: 2;
+}
+</style>
+{% endblock %}

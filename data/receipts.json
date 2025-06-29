@@ -1,0 +1,71 @@
+{
+    "test1@athleto.com": {
+        "orders": [
+            {
+                "timestamp": "2025-06-02 21:49:51",
+                "name": "Cj Artuz",
+                "contact": "09913389514",
+                "address": "183 Mabini Street\r\nPoblacion Barangay 1",
+                "items": [
+                    {
+                        "image": "/static/pictures/women/top2_women.png",
+                        "name": "WHITE ATHLETO RUNNING TANK",
+                        "price": 1299.99,
+                        "product_id": "top2_women",
+                        "quantity": 1,
+                        "size": "M"
+                    }
+                ],
+                "total_amount": 1299.99
+            },
+            {
+                "timestamp": "2025-06-02 22:43:23",
+                "name": "Cj Artuz",
+                "contact": "09913389514",
+                "address": "183 Mabini Street\r\nPoblacion Barangay 1",
+                "items": [
+                    {
+                        "image": "/static/pictures/shop1/ATHLETO%20HELMET%20(BLACK).png",
+                        "name": "ATHLETO HELMET (BLACK)",
+                        "price": 1000.0,
+                        "product_id": "Extra2",
+                        "quantity": 1,
+                        "size": "M"
+                    },
+                    {
+                        "image": "/static/pictures/latest/pink1.png",
+                        "name": "Pink Pulse",
+                        "price": 9895.0,
+                        "product_id": "Extra21",
+                        "quantity": 1,
+                        "size": "US W 11.5 / M 10"
+                    },
+                    {
+                        "image": "/static/pictures/women/top1_women.png",
+                        "name": "BLACK ATHLETO PERFORMANCE TEE",
+                        "price": 1299.99,
+                        "product_id": "top1_women",
+                        "quantity": 4,
+                        "size": "M"
+                    }
+                ],
+                "total_amount": 16094.96
+            },
+            {
+                "timestamp": "2025-06-02 23:35:29",
+                "items": [
+                    {
+                        "product_id": "top1_women",
+                        "name": "BLACK ATHLETO PERFORMANCE TEE",
+                        "quantity": 4,
+                        "size": "XS",
+                        "price": 1095.0,
+                        "image": "/static/pictures/women/top1_women.png"
+                    }
+                ]
+            }
+        ],
+        "contact": "",
+        "address": ""
+    }
+}

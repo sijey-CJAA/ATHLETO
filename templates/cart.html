@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4"> Your Cart</h2>
+
+  {% if cart %}
+  <ul class="list-group mb-4" id="cart-list">
+    {% for item in cart %}
+    <li class="list-group-item" data-product-id="{{ item.product_id }}" data-size="{{ item.size }}">
+      <div class="row align-items-center">
+        <div class="col-md-6 d-flex align-items-center">
+          {% if item.image %}
+          <img src="{{ item.image }}" alt="{{ item.name }}" class="img-thumbnail me-3"
+            style="width: 60px; height: 60px;">
+          {% endif %}
+          <div>
+            <h5 class="mb-1">{{ item.name }}</h5>
+            <small>
+              {% if item.size %}Size: {{ item.size }} | {% endif %}
+              ₱{{ "%.2f"|format(item.price|float) }} each
+            </small>
+          </div>
+        </div>
+        <div class="col-md-4 d-flex justify-content-center align-items-center">
+          <form class="update-qty-form d-inline me-2" action="{{url_for('api_update_cart')}}" method="post" data-action="decrease">
+            <input type="hidden" name="size" value="{{ item.size }}">
+            <input type="hidden" name="action" value="decrease">
+            <button type="submit" class="btn btn-sm btn-outline-secondary">‑</button>
+          </form>
+          <span class="mx-2 quantity-span">{{ item.quantity }}</span>
+          <form class="update-qty-form d-inline ms-2" action="{{url_for('api_update_cart')}}" method="post" data-action="increase">
+            <input type="hidden" name="size" value="{{ item.size }}">
+            <input type="hidden" name="action" value="increase">
+            <button type="submit" class="btn btn-sm btn-outline-secondary">＋</button>
+          </form>
+        </div>
+        <div class="col-md-2 text-end">
+          <strong class="item-subtotal">₱{{ "%.2f"|format(item.subtotal) }}</strong>
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  <div class="d-flex justify-content-end mb-4">
+    <h4>Total: <span class="text-success" id="cart-total">₱{{ "%.2f"|format(total) }}</span></h4>
+  </div>
+  <form action="{{ url_for('checkout') }}" method="get" class="text-end">
+    <button type="submit" class="btn btn-success btn-lg">Proceed to Checkout</button>
+  </form>
+  {% else %}
+  <div class="alert alert-info">Your cart is empty.</div>
+  {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.update-qty-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const li = form.closest('li[data-product-id]');
+      const productId = li.getAttribute('data-product-id');
+      const size = li.getAttribute('data-size');
+      const action = form.querySelector('input[name="action"]').value;
+      fetch('/api/cart/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          product_id: productId,
+          action: action,
+          size: size
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          li.querySelector('.quantity-span').textContent = data.item_quantity;
+          li.querySelector('.item-subtotal').textContent = '₱' + Number(data.item_subtotal).toFixed(2);
+          document.getElementById('cart-total').textContent = '₱' + Number(data.cart_total).toFixed(2);
+          if (data.item_quantity <= 0) li.remove();
+          if (data.cart_total <= 0) location.reload();
+        }
+      });
+    });
+  });
+});
+</script>
+{% endblock %}

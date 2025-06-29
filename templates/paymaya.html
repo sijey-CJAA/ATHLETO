@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}PayMaya Payment Details{% endblock %}
+
+{% block content %}
+<style>
+.paymaya-popup-card {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 6px 32px 0 rgba(0,0,0,0.13), 0 1.5px 6px 0 rgba(0,0,0,0.09);
+  border: 2px solid #111;
+  max-width: 430px;
+  margin: 50px auto;
+  overflow: hidden;
+  transition: box-shadow .2s;
+}
+.paymaya-popup-header {
+  background: #fff;
+  padding: 28px 20px 20px 20px;
+  text-align: center;
+}
+.paymaya-popup-header img {
+  height: 62px;
+  max-width: 100%;
+}
+.paymaya-popup-form {
+  padding: 36px 28px 28px 28px;
+}
+.paymaya-field-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #222;
+}
+.paymaya-popup-input {
+  border: 2px solid #2652a1;
+  border-radius: 40px;
+  padding: 15px 22px;
+  width: 100%;
+  font-size: 1.22rem;
+  margin-bottom: 7px;
+  transition: border-color .2s;
+  outline: none;
+  background: #fff;
+  color: #222;
+  text-transform: uppercase;
+}
+.paymaya-popup-input:focus {
+  border-color: #00804c;
+  box-shadow: 0 0 0 2px #b5e2fd;
+  background: #fff;
+}
+.paymaya-popup-input.invalid {
+  border-color: #dc2727 !important;
+}
+.paymaya-form-text {
+  color: #00804c;
+  font-size: 1rem;
+  margin-top: 0;
+  margin-bottom: 15px;
+  margin-left: 2px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+.paymaya-popup-btn {
+  display: block;
+  width: 90%;
+  margin: 26px auto 0 auto;
+  background: #9be6b1;
+  color: #222;
+  font-size: 1.18rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 22px;
+  padding: 15px 0 13px 0;
+  box-shadow: 0 6px 0 0 #3a8c7c;
+  cursor: pointer;
+  transition: background .18s, box-shadow .18s;
+}
+.paymaya-popup-btn:hover, .paymaya-popup-btn:focus {
+  background: #7fd491;
+  box-shadow: 0 10px 16px 0 rgba(58,140,124,0.18);
+}
+.paymaya-popup-footer {
+  text-align: center;
+  margin-top: 16px;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // PayMaya Number: Only allow digits, exactly 11 digits, must start with 09, else show red border
+  const paymayaNumber = document.getElementById('paymaya_number');
+  const paymayaForm = document.querySelector('.paymaya-popup-form');
+  const paymayaName = document.getElementById('paymaya_name');
+
+  function validateNumber() {
+    const val = paymayaNumber.value;
+    const isValid = /^09\d{9}$/.test(val);
+    if (!isValid) {
+      paymayaNumber.classList.add('invalid');
+    } else {
+      paymayaNumber.classList.remove('invalid');
+    }
+    return isValid;
+  }
+
+  function validateName() {
+    // Require at least two names, each at least 2 chars
+    const val = paymayaName.value.trim();
+    const words = val.split(/\s+/);
+    const isValid = words.length >= 2 && words.every(word => word.length > 1);
+    if (!isValid) {
+      paymayaName.classList.add('invalid');
+    } else {
+      paymayaName.classList.remove('invalid');
+    }
+    return isValid;
+  }
+
+  // Only allow input starting with 09 and limit to 11 digits
+  paymayaNumber.addEventListener('input', function () {
+    let v = this.value.replace(/\D/g, '');
+    if (v.length === 1 && v !== '0') v = '';
+    if (v.length === 2 && v !== '09') v = '09';
+    if (!v.startsWith('09')) v = '09';
+    this.value = v.slice(0, 11);
+    validateNumber();
+  });
+
+  // Force upper case and validate name
+  paymayaName.addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+    validateName();
+  });
+
+  paymayaForm.addEventListener('submit', function(e) {
+    let valid = true;
+    if (!validateNumber()) valid = false;
+    if (!validateName()) valid = false;
+    if (!valid) {
+      e.preventDefault();
+      if (paymayaNumber.classList.contains('invalid')) paymayaNumber.focus();
+      else if (paymayaName.classList.contains('invalid')) paymayaName.focus();
+    }
+  });
+});
+</script>
+
+<div class="paymaya-popup-card">
+  <div class="paymaya-popup-header">
+    <img src="{{ url_for('static', filename='pictures/paymaya_header.png') }}" alt="PayMaya">
+  </div>
+  <form class="paymaya-popup-form" method="post" action="{{ url_for('paymaya_details') }}" autocomplete="off" novalidate>
+    <label for="paymaya_number" class="paymaya-field-label">PayMaya Mobile Number</label>
+    <input type="tel" class="paymaya-popup-input" id="paymaya_number" name="paymaya_number" required maxlength="11" placeholder="09123456789" autocomplete="off">
+    <div class="paymaya-form-text">Enter your 11-digit PayMaya mobile number starting with 09</div>
+
+    <label for="paymaya_name" class="paymaya-field-label">PayMaya Account Name</label>
+    <input type="text" class="paymaya-popup-input" id="paymaya_name" name="paymaya_name" required placeholder="Full Name" autocomplete="off">
+
+    <button type="submit" class="paymaya-popup-btn">Continue</button>
+  </form>
+  <div class="paymaya-popup-footer">
+    <a href="{{ url_for('checkout_info') }}">&#8592; Back to Checkout</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 18px;
+        padding: 16px;
+    }
+    .product-card {
+        background: transparent;
+        border: none;
+        padding: 10px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: visible;
+        box-shadow: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .product-image {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        margin-bottom: 10px;
+        border-radius: 12px;
+        box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.06);
+        background: #fff;
+        max-width: 190px;
+    }
+    .product-name {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 5px;
+        color: #ffffff;
+        text-align: center;
+    }
+    .btn-view-options {
+        width: 100%;
+        background-color: rgb(0, 0, 0);
+        color: rgb(255, 255, 255);
+        border: 1px solid black;
+        padding: 8px 12px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-view-options:hover {
+        background-color: #f8f9fa;
+        border-color: #212529;
+        color: #000;
+    }
+    .btn-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    .btn-cart {
+        background: #000;
+        color: rgb(232, 128, 123);
+    }
+    .btn-checkout {
+        background: #000000;
+        color: rgb(146, 200, 245);
+    }
+    .card.card-body {
+        background: rgba(125, 125, 125, 0.97);
+        border-radius: 16px;
+        border: 1px solid #e3e3e3;
+    }
+    .text-success {
+        color: #78faaa !important;
+        font-weight: 500;
+    }
+    .text-danger {
+        color: #f28888 !important;
+        font-weight: 500;
+    }
+    @media (max-width: 900px) {
+        .product-grid {
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            padding: 8px;
+        }
+        .product-image {
+            max-width: 110px;
+        }
+    }
+    @media (max-width: 600px) {
+        .product-grid {
+            grid-template-columns: 1fr;
+        }
+        .product-card {
+            padding: 4px;
+        }
+        .product-image {
+            max-width: 90vw;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="product-grid">
+{% set product_data = [
+    ("Extra1", "ATHLETO BASEBALL.png", "ATHLETO BASEBALL", "1000.00", "WHITE"),
+    ("Extra2", "ATHLETO HELMET (BLACK).png", "ATHLETO HELMET (BLACK)", "1000.00", "BLACK"),
+    ("Extra3", "ATHLETO HELMET (PINK).png", "ATHLETO HELMET (PINK)", "1499.00", "PINK"),
+    ("Extra4", "ATHLETO CAP (Green).png", "Athleto Cap (Green)", "3500.00", "GREEN"),
+    ("Extra5", "ATHLETO SHUTTLECOCK.png", "ATHLETO SHUTTLECOCK", "499.00", "RED"),
+    ("Extra6", "ATHLETO PINGPONG.png", "ATHLETO PINGPONG RACKET", "399.00", "BLACK"),
+    ("Extra7", "ATHLETO FOOTBALL.png", "ATHLETO FOOTBALL", "2999.00", "STANDARD"),
+    ("Extra8", "ATHLETO GOLF.png", "ATHLETO GOLF", "2999.00", "PITCH BLACK"),
+    ("Extra9", "ATHLETO BASEBALL BATT.png", "ATHLETO BASEBALL BAT", "3799.00", "BLACK"),
+    ("Extra10", "ATHLETO HOCKEY.png", "ATHLETO HOCKEY", "2999.00", "BLACK"),
+    ("Extra11", "ATHLETO BASEBALL GLOVES.png", "ATHLETO BASEBALL GLOVES", "1999.00", "STANDARD"),
+    ("Extra12", "PINK SLIPPERS.png", "ATHLETO PINK SLIPPERS", "1199.00", "PINK"),
+    ("Extra13", "ATHLETO TENNIS.png", "ATHLETO TENNIS RACKET", "2799.00", "BLACK"),
+    ("Extra14", "ATHLETO TENNIS BALL.png", "ATHLETO TENNIS BALL", "499.00", "STANDARD"),
+    ("Extra15", "ATHLETO ELBOW PAD.png", "ATHLETO ELBOW PAD", "1499.00", "BLACK"),
+    ("Extra16", "RED HEADBAND.png", "ATHLETO BANDANA", "699.00", "RED"),
+    ("Extra17", "ATHLETO WRIST BAND.png", "ATHLETO WRIST BAND", "299.00", "BLUE"),
+    ("Extra18", "ATHLETO CAP (PINK).png", "ATHLETO CAP (PINK)", "999.00", "PINK"),
+    ("Extra19", "ATHLETO SPORTS BAG.png", "ATHLETO SPORTS BAG", "1499.00", "LIGHT BLUE"),
+    ("Extra20", "ATHLETO TENNIS CAP.png", "ATHLETO TENNIS CAP", "1000.00", "BLACK"),
+] %}
+{% for pid, img, name, price, color in product_data %}
+    <div class="product-card">
+        <img src="{{ url_for('static', filename='pictures/shop1/' ~ img) }}" class="product-image" alt="{{ name }}">
+        <div class="product-name">{{ name }}</div>
+        <p>
+            {% set stock = stocks.get(pid, 0) %}
+            {% if stock > 0 %}
+                <span class="text-success">Stock: {{ stock }}</span>
+            {% else %}
+                <span class="text-danger">Out of stock</span>
+            {% endif %}
+        </p>
+        <p>
+            <button class="btn btn-view-options" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapse-{{ pid }}" aria-expanded="false" aria-controls="collapse-{{ pid }}">
+                VIEW PRODUCT OPTIONS
+            </button>
+        </p>
+        <div style="min-height: 120px;">
+            <div class="collapse collapse-horizontal" id="collapse-{{ pid }}">
+                <div class="card card-body">
+                    <div class="dropdown-title" style="color:#fff;">{{ name }}</div>
+                    <div class="product-color" style="color:#e4eaff;">- {{ color }}</div>
+                    <div class="product-price" style="color:#e4eaff;">₱{{ price }}</div>
+                    <div class="form-group">
+                        <label for="qty-{{ pid }}" style="color:#fff;">Quantity:</label>
+                        <input type="number" class="form-control"
+                               id="qty-{{ pid }}"
+                               min="1"
+                               max="{{ stock }}"
+                               value="1"
+                               name="quantity"
+                               {% if stock == 0 %}disabled{% endif %}>
+                    </div>
+                    <div id="stock-warning-{{ pid }}" class="text-danger mt-1" style="display:none;">Not enough stock!</div>
+                    <div class="btn-group">
+                        <!-- Add to Cart Form -->
+                        <form action="{{ url_for('add_to_cart', product_id=pid) }}" method="post"
+                              onsubmit="return setProductQty('{{ pid }}', this);">
+                            <input type="hidden" name="quantity">
+                            <input type="hidden" name="size" value="">
+                            <button type="submit" class="btn btn-cart" {% if stock == 0 %}disabled{% endif %}>
+                                ADD TO CART
+                            </button>
+                        </form>
+                        <!-- Buy Now Form -->
+                        <form action="{{ url_for('buy_now_info', product_id=pid) }}" method="post"
+                              onsubmit="return setProductQty('{{ pid }}', this);">
+                            <input type="hidden" name="price" value="{{ price }}">
+                            <input type="hidden" name="size" value="">
+                            <input type="hidden" name="quantity">
+                            <button type="submit" class="btn btn-checkout" {% if stock == 0 %}disabled{% endif %}>
+                                BUY NOW
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+    </div>
+</div>
+
+<script>
+function setProductQty(pid, form) {
+    var qtyInput = document.getElementById('qty-' + pid);
+    var stock = parseInt(qtyInput.max) || 0;
+    var qty = parseInt(qtyInput.value) || 1;
+    if (qty > stock) {
+        qty = stock;
+        qtyInput.value = stock;
+        var warn = document.getElementById('stock-warning-' + pid);
+        if (warn) warn.style.display = "block";
+        return false;
+    }
+    if (qty < 1) {
+        qty = 1;
+        qtyInput.value = 1;
+        return false;
+    }
+    form.querySelector('input[name="quantity"]').value = qty;
+    return true; // allow form submit
+}
+</script>
+
+{% endblock %}

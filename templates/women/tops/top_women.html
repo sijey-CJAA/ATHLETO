@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="container-fluid p-5 mt-5 mb-3" style="background-color: maroon">
+    <h3 class="text-center text-white">WOMEN'S TOPS COLLECTION</h3>
+    <h5 class="text-center text-white">Premium Athletic Tops</h5>
+  </div>
+
+  <div class="container">
+    <div class="row g-4">
+      {% for name, endpoint, image in [
+        ('AeroCrop Dri-Fit Tee', 'top1_women', 'women/top1_women.png'),
+        ('AeroCrop Dri-Fit Tee', 'top2_women', 'women/top2_women.png'),  
+        ('ProForm Bra', 'top3_women', 'women/top3_women.png'),
+        ('ProForm Bra', 'top4_women', 'women/top4_women.png')
+      ] %}
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <div class="card h-100 shadow-sm breathing-card">
+          <a href="{{ url_for(endpoint) }}" class="text-decoration-none stretched-link">
+            <img src="{{ url_for('static', filename='pictures/' + image) }}"
+                 class="card-img-top"
+                 alt="{{ name }}"
+                 style="height: 300px; object-fit: cover;">
+            <div class="card-body">
+              <h5 class="card-title">{{ name }}</h5>
+              <p class="card-text text-muted">View Collection</p>
+            </div>
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="{{ url_for('women') }}" class="btn btn-secondary">Back to Women's Section</a>
+    </div>
+  </div>
+
+<style>
+@keyframes breathing {
+  0%   { box-shadow: 0 4px 24px 0 rgba(128,0,0,0.10), 0 0 0 0 rgba(128,0,0,0.08); transform: scale(1);}
+  50%  { box-shadow: 0 8px 36px 8px rgba(128,0,0,0.18), 0 0 24px 8px rgba(128,0,0,0.14); transform: scale(1.035);}
+  100% { box-shadow: 0 4px 24px 0 rgba(128,0,0,0.10), 0 0 0 0 rgba(128,0,0,0.08); transform: scale(1);}
+}
+.breathing-card {
+  transition: box-shadow 0.3s, transform 0.3s;
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+.breathing-card:hover,
+.breathing-card:focus-visible {
+  animation: breathing 1.5s cubic-bezier(.4,0,.2,1) infinite;
+  z-index: 2;
+}
+</style>
+{% endblock %}

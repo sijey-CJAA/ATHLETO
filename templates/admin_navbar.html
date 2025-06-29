@@ -1,0 +1,30 @@
+<nav class="admin-navbar mb-4">
+  <ul class="nav nav-pills justify-content-center">
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_users') }}">Users</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_receipts') }}">Receipts</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('view_products_db') }}">Products Database</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+  </ul>
+</nav>
+<style>
+  .admin-navbar {
+    background: #1a1a23;
+    border-bottom: 2px solid #c1121f;
+    padding: 1rem 0 0.5rem 0;
+    margin-bottom: 2rem;
+  }
+  .admin-navbar .nav-link {
+    color: #f8f9fa !important;
+    font-weight: 500;
+    padding: 0.5rem 1.2rem;
+    margin: 0 0.1rem;
+    transition: background 0.18s, color 0.18s;
+  }
+  .admin-navbar .nav-link.active,
+  .admin-navbar .nav-link:hover,
+  .admin-navbar .nav-link:focus {
+    background: #c1121f !important;
+    color: #fff !important;
+  }
+</style>

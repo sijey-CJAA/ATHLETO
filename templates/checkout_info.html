@@ -1,0 +1,429 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  .checkout-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+  }
+  .checkout-card {
+    background: rgba(30, 32, 38, 0.97);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    padding: 2.5rem 2rem 1.5rem 2rem;
+    max-width: 540px;
+    width: 100%;
+    margin: 0 auto;
+    border: 1.5px solid #343a40;
+  }
+  .checkout-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+  .checkout-title-emoji {
+    font-size: 2.2rem;
+    filter: drop-shadow(0 2px 8px #2226);
+  }
+  .checkout-list {
+    width: 100%;
+    padding: 0;
+    margin-bottom: 2rem;
+  }
+  .checkout-list-item {
+    background: rgba(44, 47, 56, 0.96);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    padding: 1.2rem 1.1rem 0.9rem 1.1rem;
+    color: #fff;
+    box-shadow: 0 2px 8px 0 rgba(31,38,135,.04);
+    border: 1px solid #292b30;
+  }
+  .checkout-list-item:last-child {
+    margin-bottom: 0;
+  }
+  .checkout-grantotal {
+    font-size: 1.24rem;
+    color: #7fffd4;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 1.7rem;
+    letter-spacing: 1px;
+  }
+  .checkout-actions {
+    display: flex;
+    gap: 1.25rem;
+    justify-content: center;
+    margin-top: 1.3rem;
+  }
+  @media (max-width: 600px) {
+    .checkout-card { padding: 1.2rem 0.7rem 0.5rem 0.7rem; }
+    .checkout-title { font-size: 1.2rem; }
+    .checkout-list-item { font-size: 0.98rem; }
+  }
+  .is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220,53,69,.25);
+  }
+</style>
+
+<div class="checkout-center">
+  {% if step == 'info' %}
+    <h2 class="mb-4 text-center">Shipping &amp; Contact Information</h2>
+    <form action="{{ url_for('checkout_confirm') }}" method="post" class="row g-3" style="max-width:500px; margin:0 auto;">
+      <div class="col-md-6">
+        <label for="name" class="form-label">Full Name</label>
+        <input type="text" id="name" name="name" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <label for="contact" class="form-label">Contact Number</label>
+        <div class="input-group">
+          <span class="input-group-text" id="phi-prefix">+63</span>
+          <input
+            type="tel"
+            id="contact"
+            name="contact"
+            class="form-control"
+            required
+            pattern="\d{10}"
+            maxlength="10"
+            minlength="10"
+            inputmode="numeric"
+            aria-describedby="phi-prefix"
+            placeholder="9123456789"
+          >
+        </div>
+        <div class="form-text">Enter 10 digits (e.g., 9123456789)</div>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Address</label>
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label for="region" class="form-label">Region</label>
+            <select id="region" name="region" class="form-select" required>
+              <option value="">Select Region</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="province" class="form-label">Province</label>
+            <select id="province" name="province" class="form-select" required disabled>
+              <option value="">Select Province</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="city" class="form-label">City</label>
+            <select id="city" name="city" class="form-select" required disabled>
+              <option value="">Select City/Municipality</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="barangay" class="form-label">Barangay</label>
+            <select id="barangay" name="barangay" class="form-select" required disabled>
+              <option value="">Select Barangay</option>
+            </select>
+          </div>
+        </div>
+        <div class="row g-2 mt-2">
+          <div class="col-md-4">
+            <label for="postal" class="form-label">Postal Code</label>
+            <input type="text" id="postal" name="postal" class="form-control" required pattern="\d{4}" maxlength="4" inputmode="numeric" placeholder="e.g. 4300">
+          </div>
+          <div class="col-md-8">
+            <label for="home_number" class="form-label">House/Unit/Building/Street</label>
+            <input type="text" id="home_number" name="home_number" class="form-control" required placeholder="e.g. 123-B Main St.">
+          </div>
+        </div>
+      </div>
+      <!-- Mode of Payment Options -->
+<div class="col-12">
+  <label class="form-label mb-2">Mode of Payment</label>
+  
+<div class="mb-1 fw-bold">Payment Options</div>
+<div class="row mb-3">
+  <!-- E-wallet Column -->
+  <div class="col-md-6">
+    <div class="mb-1 fw-bold">E-wallet</div>
+    <div class="form-check d-flex align-items-center mb-1">
+      <input class="form-check-input" type="radio" name="payment_mode" id="payment_gcash" value="GCash" required>
+      <label class="form-check-label d-flex align-items-center ms-2" for="payment_gcash">
+        <img src="{{ url_for('static', filename='pictures/gcash.png') }}" alt="GCash" style="height:32px;width:32px;object-fit:contain;margin-right:7px;">GCash
+      </label>
+    </div>
+    <div class="form-check d-flex align-items-center mb-1">
+      <input class="form-check-input" type="radio" name="payment_mode" id="payment_paymaya" value="PayMaya">
+      <label class="form-check-label d-flex align-items-center ms-2" for="payment_paymaya">
+        <img src="{{ url_for('static', filename='pictures/paymaya.png') }}" alt="PayMaya" style="height:32px;width:32px;object-fit:contain;margin-right:7px;">PayMaya
+      </label>
+    </div>
+  </div>
+  <!-- Online Banking Column -->
+  <div class="col-md-6">
+    <div class="mb-1 fw-bold">Online Banking</div>
+    <div class="form-check d-flex align-items-center mb-1">
+      <input class="form-check-input" type="radio" name="payment_mode" id="payment_bdo" value="BDO">
+      <label class="form-check-label d-flex align-items-center ms-2" for="payment_bdo">
+        <img src="{{ url_for('static', filename='pictures/bdo.png') }}" alt="BDO" style="height:32px;width:32px;object-fit:contain;margin-right:7px;">BDO
+      </label>
+    </div>
+    <div class="form-check d-flex align-items-center mb-1">
+      <input class="form-check-input" type="radio" name="payment_mode" id="payment_bpi" value="BPI">
+      <label class="form-check-label d-flex align-items-center ms-2" for="payment_bpi">
+        <img src="{{ url_for('static', filename='pictures/bpi.png') }}" alt="BPI" style="height:32px;width:32px;object-fit:contain;margin-right:7px;">BPI
+      </label>
+    </div>
+  </div>
+</div>
+
+<div class="mb-1 fw-bold">Cash on Delivery</div>
+<div class="form-check d-flex align-items-center mb-1">
+  <input class="form-check-input" type="radio" name="payment_mode" id="payment_cod" value="COD">
+  <label class="form-check-label d-flex align-items-center ms-2" for="payment_cod">
+  Cash on Delivery (COD)
+  </label>
+</div>
+      <!-- End Mode of Payment Options -->
+      <div class="col-12 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">Place Order</button>
+      </div>
+    </form>
+    <script>
+      // ... your script remains unchanged ...
+      // Full Name validation
+      const nameInput = document.getElementById('name');
+      function validateNameInput() {
+        if (nameInput.value.trim() === '') {
+          nameInput.classList.add('is-invalid');
+        } else {
+          nameInput.classList.remove('is-invalid');
+        }
+      }
+      nameInput.addEventListener('input', validateNameInput);
+      nameInput.addEventListener('blur', validateNameInput);
+
+      // Postal code validation
+      const postalInput = document.getElementById('postal');
+      function validatePostalInput() {
+        const value = postalInput.value.replace(/[^0-9]/g, '');
+        postalInput.value = value.slice(0, 4);
+        if (postalInput.value.length !== 4) {
+          postalInput.classList.add('is-invalid');
+        } else {
+          postalInput.classList.remove('is-invalid');
+        }
+      }
+      postalInput.addEventListener('input', validatePostalInput);
+      postalInput.addEventListener('blur', validatePostalInput);
+
+      // Home/Unit/Building/Street validation
+      const homeNumberInput = document.getElementById('home_number');
+      function validateHomeNumberInput() {
+        if (homeNumberInput.value.trim() === '') {
+          homeNumberInput.classList.add('is-invalid');
+        } else {
+          homeNumberInput.classList.remove('is-invalid');
+        }
+      }
+      homeNumberInput.addEventListener('input', validateHomeNumberInput);
+      homeNumberInput.addEventListener('blur', validateHomeNumberInput);
+
+      // Contact number validation
+      const contactInput = document.getElementById('contact');
+      function validateContactInput() {
+        let value = contactInput.value.replace(/[^0-9]/g, '');
+        value = value.slice(0, 10);
+        if (value.length > 0 && value[0] !== '9') {
+          value = value.slice(1);
+        }
+        contactInput.value = value;
+        if (value.length !== 10) {
+          contactInput.classList.add('is-invalid');
+        } else {
+          contactInput.classList.remove('is-invalid');
+        }
+      }
+      contactInput.addEventListener('input', validateContactInput);
+      contactInput.addEventListener('blur', validateContactInput);
+
+      // Optionally, validate all on form submit
+      const form = nameInput.closest('form');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          validateNameInput();
+          validateContactInput();
+          validatePostalInput();
+          validateHomeNumberInput();
+          if (
+            nameInput.classList.contains('is-invalid') ||
+            contactInput.classList.contains('is-invalid') ||
+            postalInput.classList.contains('is-invalid') ||
+            homeNumberInput.classList.contains('is-invalid')
+          ) {
+            e.preventDefault();
+          }
+        });
+      }
+
+      // Cascading address picker with region
+      let addressData = [];
+      fetch('{{ url_for("static", filename="addressData.json") }}')
+        .then(response => response.json())
+        .then(data => {
+          addressData = data;
+          populateRegions();
+        });
+
+      const regionSelect = document.getElementById('region');
+      const provinceSelect = document.getElementById('province');
+      const citySelect = document.getElementById('city');
+      const barangaySelect = document.getElementById('barangay');
+
+      function populateRegions() {
+        const regions = [...new Set(addressData.map(item => item.region))].sort();
+        regionSelect.innerHTML = '<option value="">Select Region</option>';
+        regions.forEach(region => {
+          const option = document.createElement('option');
+          option.value = region;
+          option.textContent = region;
+          regionSelect.appendChild(option);
+        });
+        regionSelect.disabled = false;
+        provinceSelect.innerHTML = '<option value="">Select Province</option>';
+        provinceSelect.disabled = true;
+        citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+        citySelect.disabled = true;
+        barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+        barangaySelect.disabled = true;
+      }
+
+      regionSelect.addEventListener('change', function() {
+        const selectedRegion = this.value;
+        if (!selectedRegion) {
+          provinceSelect.innerHTML = '<option value="">Select Province</option>';
+          provinceSelect.disabled = true;
+          citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+          citySelect.disabled = true;
+          barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+          barangaySelect.disabled = true;
+          return;
+        }
+        const provinces = [
+          ...new Set(
+            addressData
+              .filter(item => item.region === selectedRegion)
+              .map(item => item.province)
+          )
+        ].sort();
+        provinceSelect.innerHTML = '<option value="">Select Province</option>';
+        provinces.forEach(province => {
+          const option = document.createElement('option');
+          option.value = province;
+          option.textContent = province;
+          provinceSelect.appendChild(option);
+        });
+        provinceSelect.disabled = false;
+        citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+        citySelect.disabled = true;
+        barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+        barangaySelect.disabled = true;
+      });
+
+      provinceSelect.addEventListener('change', function() {
+        const selectedRegion = regionSelect.value;
+        const selectedProvince = this.value;
+        if (!selectedProvince) {
+          citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+          citySelect.disabled = true;
+          barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+          barangaySelect.disabled = true;
+          return;
+        }
+        const cities = [
+          ...new Set(
+            addressData
+              .filter(item => item.region === selectedRegion && item.province === selectedProvince)
+              .map(item => item.city)
+          )
+        ].sort();
+        citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+        cities.forEach(city => {
+          const option = document.createElement('option');
+          option.value = city;
+          option.textContent = city;
+          citySelect.appendChild(option);
+        });
+        citySelect.disabled = false;
+        barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+        barangaySelect.disabled = true;
+      });
+
+      citySelect.addEventListener('change', function() {
+        const selectedRegion = regionSelect.value;
+        const selectedProvince = provinceSelect.value;
+        const selectedCity = this.value;
+        if (!selectedCity) {
+          barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+          barangaySelect.disabled = true;
+          return;
+        }
+        const barangays = [
+          ...new Set(
+            addressData
+              .filter(item =>
+                item.region === selectedRegion &&
+                item.province === selectedProvince &&
+                item.city === selectedCity
+              )
+              .map(item => item.barangay)
+          )
+        ].sort();
+        barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+        barangays.forEach(barangay => {
+          const option = document.createElement('option');
+          option.value = barangay;
+          option.textContent = barangay;
+          barangaySelect.appendChild(option);
+        });
+        barangaySelect.disabled = false;
+      });
+    </script>
+  {% else %}
+    <div class="checkout-card">
+      <div class="checkout-title">
+        <span class="checkout-title-emoji"></span>
+        <h2 class="m-0" style="font-weight:700; letter-spacing:1px;">Confirm Your Order</h2>
+      </div>
+      {% set grand_total = 0 %}
+      <ul class="checkout-list">
+        {% for item in cart %}
+          {% set line_total = item.quantity * (item.price if item.price is defined else 0) %}
+          {% set grand_total = grand_total + line_total|float %}
+          <li class="checkout-list-item">
+            <div>
+              <strong>{{ item.name }}</strong><br>
+              Quantity: {{ item.quantity }}
+              {% if item.price is defined %}<br>
+              Price: ₱{{ '%.2f'|format(item.price|float) }}<br>
+              Subtotal: ₱{{ '%.2f'|format(line_total|float) }}
+              {% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+      {% if grand_total > 0 %}
+        <div class="checkout-grantotal">Grand Total: ₱{{ '%.2f'|format(grand_total) }}</div>
+      {% endif %}
+      <div class="checkout-actions">
+        <form action="{{ url_for('confirm_purchase') }}" method="post">
+          <button type="submit" class="btn btn-success">Yes, continue</button>
+        </form>
+        <a href="{{ url_for('view_cart') }}" class="btn btn-outline-secondary">Back to Cart</a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

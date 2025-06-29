@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% block title %}Order Confirmation{% endblock %}
+{% block content %}
+<style>
+  .confirmation-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .confirmation-card {
+    background: rgba(40, 44, 52, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .confirmation-header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .confirmation-body {
+    padding: 2rem;
+  }
+  
+  .product-display {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .product-image {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: white;
+    padding: 10px;
+    margin-right: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .product-image:hover {
+    transform: scale(1.05);
+  }
+  
+  .product-details {
+    flex: 1;
+  }
+  
+  .detail-row {
+    display: flex;
+    margin-bottom: 0.5rem;
+  }
+  
+  .detail-label {
+    font-weight: 600;
+    color: #a1a1a1;
+    width: 120px;
+  }
+  
+  .detail-value {
+    color: white;
+    flex: 1;
+  }
+  
+  .total-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #4caf50;
+    text-align: right;
+    margin: 1.5rem 0;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .shipping-section {
+    background: rgba(30, 35, 40, 0.7);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  
+  .btn-confirm {
+    background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+    border: none;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-confirm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(46, 125, 50, 0.4);
+  }
+  
+  .btn-cancel {
+    background: transparent;
+    border: 1px solid #6c757d;
+    color: #e4e4e4;
+    padding: 0.75rem 2rem;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-cancel:hover {
+    background: rgba(108, 117, 125, 0.2);
+    color: white;
+  }
+  
+  @media (max-width: 768px) {
+    .product-display {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .product-image {
+      margin-right: 0;
+      margin-bottom: 1rem;
+    }
+    
+    .detail-row {
+      flex-direction: column;
+    }
+    
+    .detail-label {
+      width: 100%;
+      margin-bottom: 0.25rem;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+    }
+    
+    .btn-confirm, .btn-cancel {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="confirmation-container">
+  <div class="confirmation-card">
+    <div class="confirmation-header">
+      <h2><i class="fas fa-check-circle me-2"></i>Order Confirmation</h2>
+      <p class="mb-0">Please review your order details before confirming</p>
+    </div>
+    
+    <div class="confirmation-body">
+      <div class="product-display">
+        <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}" class="product-image">
+        <div class="product-details">
+          <h4>{{ product.name }}</h4>
+          <div class="detail-row">
+            <span class="detail-label">Product ID:</span>
+            <span class="detail-value">{{ product_id }}</span>
+          </div>
+          {% if size %}
+          <div class="detail-row">
+            <span class="detail-label">Size:</span>
+            <span class="detail-value">{{ size }}</span>
+          </div>
+          {% endif %}
+          <div class="detail-row">
+            <span class="detail-label">Quantity:</span>
+            <span class="detail-value">{{ quantity }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Unit Price:</span>
+            <span class="detail-value">₱{{ "%.2f"|format(price) }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="total-price">
+        Total Amount: ₱{{ "%.2f"|format(total) }}
+      </div>
+      
+      <div class="shipping-section">
+        <h5><i class="fas fa-truck me-2"></i>Shipping Details</h5>
+        <div class="detail-row">
+          <span class="detail-label">Recipient:</span>
+          <span class="detail-value">{{ name }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Contact:</span>
+          <span class="detail-value">+63 {{ contact }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Address:</span>
+          <span class="detail-value">
+            {%- if home_number and barangay and city and province and region -%}
+              {{ home_number }}, {{ barangay }}, {{ city }}, {{ province }}, {{ region }}
+            {%- else -%}
+              {{ address }}
+            {%- endif -%}
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Payment Method:</span>
+          <span class="detail-value">
+            {{ payment_method|capitalize }}
+            {% if payment_method == "gcash" and gcash_number %}
+              <br><small>GCash #: {{ gcash_number }}, Name: {{ gcash_name }}</small>
+            {% elif payment_method == "paymaya" and paymaya_number %}
+              <br><small>PayMaya #: {{ paymaya_number }}, Name: {{ paymaya_name }}</small>
+            {% elif payment_method == "bdo" and bdo_account_number %}
+              <br><small>BDO Acc #: {{ bdo_account_number }}, Name: {{ bdo_account_name }}</small>
+            {% elif payment_method == "bpi" and bpi_account_number %}
+              <br><small>BPI Acc #: {{ bpi_account_number }}, Name: {{ bpi_account_name }}</small>
+            {% endif %}
+          </span>
+        </div>
+      </div>
+      
+      <form action="{{ url_for('confirm_purchase', product_id=product_id) }}" method="post" class="d-inline">
+        <input type="hidden" name="size" value="{{ size }}">
+        <input type="hidden" name="price" value="{{ price }}">
+        <input type="hidden" name="quantity" value="{{ quantity }}">
+        <input type="hidden" name="name" value="{{ name }}">
+        <input type="hidden" name="contact" value="{{ contact }}">
+        <input type="hidden" name="home_number" value="{{ home_number }}">
+        <input type="hidden" name="barangay" value="{{ barangay }}">
+        <input type="hidden" name="city" value="{{ city }}">
+        <input type="hidden" name="province" value="{{ province }}">
+        <input type="hidden" name="region" value="{{ region }}">
+        <input type="hidden" name="address" value="{{ address }}">
+        <input type="hidden" name="payment_method" value="{{ payment_method }}">
+        <input type="hidden" name="gcash_number" value="{{ gcash_number }}">
+        <input type="hidden" name="gcash_name" value="{{ gcash_name }}">
+        <input type="hidden" name="paymaya_number" value="{{ paymaya_number }}">
+        <input type="hidden" name="paymaya_name" value="{{ paymaya_name }}">
+        <input type="hidden" name="bdo_account_number" value="{{ bdo_account_number }}">
+        <input type="hidden" name="bdo_account_name" value="{{ bdo_account_name }}">
+        <input type="hidden" name="bpi_account_number" value="{{ bpi_account_number }}">
+        <input type="hidden" name="bpi_account_name" value="{{ bpi_account_name }}">
+        
+        <div class="action-buttons">
+          <button type="submit" name="place_order" value="1" class="btn btn-confirm">
+            <i class="fas fa-check me-2"></i>Confirm Order
+          </button>
+          <a href="{{ url_for('home') }}" class="btn btn-cancel">
+            <i class="fas fa-times me-2"></i>Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

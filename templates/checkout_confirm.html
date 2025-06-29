@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Confirm Your Order{% endblock %}
+{% block content %}
+<div class="checkout-center">
+  <div class="checkout-card">
+    <div class="checkout-title">
+      <h2 class="m-0" style="font-weight:700; letter-spacing:1px;">Confirm Your Order</h2>
+    </div>
+    {% set grand_total = 0 %}
+    <ul class="checkout-list">
+      {% for item in cart %}
+        {% set line_total = item.quantity * (item.price if item.price is defined else 0) %}
+        {% set grand_total = grand_total + line_total|float %}
+        <li class="checkout-list-item">
+          <div>
+            <strong>{{ item.name }}</strong><br>
+            Quantity: {{ item.quantity }}
+            {% if item.price is defined %}<br>
+            Price: ₱{{ '%.2f'|format(item.price|float) }}<br>
+            Subtotal: ₱{{ '%.2f'|format(line_total|float) }}
+            {% endif %}
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+    {% if grand_total > 0 %}
+      <div class="checkout-grantotal">Grand Total: ₱{{ '%.2f'|format(grand_total) }}</div>
+    {% endif %}
+    <div class="checkout-actions">
+      <form action="{{ url_for('checkout_info') }}" method="get">
+        <button type="submit" class="btn btn-success">Yes, continue</button>
+      </form>
+      <a href="{{ url_for('view_cart') }}" class="btn btn-outline-secondary">Back to Cart</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  .fade-in-section {
+    opacity: 0;
+    transform: translateY(40px);
+    animation: fadeInUp 1.1s cubic-bezier(.39,.58,.57,1) 0.1s forwards;
+  }
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .center-content {
+    min-height: 80vh;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /* Remove background and add a 3D square effect */
+    background: transparent;
+    position: relative;
+    z-index: 1;
+  }
+  .success-gif {
+    width: 650px;
+    max-width: 98vw;
+    margin-bottom: 2.2rem;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    border-radius: 0;
+    display: block;
+    z-index: 2;
+  }
+  /* 3D Square Grid Effect */
+  .squares-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100vw; height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    background: transparent;
+    overflow: hidden;
+  }
+  .squares-bg .square {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background: rgba(60, 160, 255, 0.11);
+    border-radius: 18px;
+    box-shadow: 0 18px 40px 0 rgba(24, 40, 60, 0.22), 0 2px 12px 0 rgba(24,40,60,0.09);
+    transform: rotateX(18deg) rotateY(18deg) scale(1.04);
+    filter: blur(0.7px);
+    animation: floatSquares 16s infinite linear alternate;
+  }
+  .squares-bg .square.sq2 { left: 12vw; top: 6vh; animation-delay: 2s; }
+  .squares-bg .square.sq3 { left: 65vw; top: 19vh; animation-delay: 5s; }
+  .squares-bg .square.sq4 { left: 42vw; top: 62vh; animation-delay: 9s; }
+  .squares-bg .square.sq5 { left: 75vw; top: 64vh; animation-delay: 15s; }
+  .squares-bg .square.sq6 { left: 7vw; top: 62vh; animation-delay: 12s; }
+  @keyframes floatSquares {
+    0% { transform: rotateX(18deg) rotateY(18deg) scale(1) translateY(0); }
+    100% { transform: rotateX(18deg) rotateY(18deg) scale(1.08) translateY(-30px);}
+  }
+  .btn-home {
+    font-size: 1.14rem;
+    padding: 0.8rem 2.8rem;
+    border-radius: 30px;
+    font-weight: 600;
+    background: #bacdc9;
+    color: #192b3a;
+    box-shadow: 0 2px 12px 0 #acb1b07c;
+    border: none;
+    transition: background 0.18s;
+    margin-top: 0.5rem;
+    z-index: 2;
+  }
+  .btn-home:hover {
+    background: #13bb97;
+    color: #fff;
+  }
+</style>
+<!-- 3D squares background layer -->
+<div class="squares-bg">
+  <div class="square sq2"></div>
+  <div class="square sq3"></div>
+  <div class="square sq4"></div>
+  <div class="square sq5"></div>
+  <div class="square sq6"></div>
+</div>
+<div class="center-content fade-in-section">
+  <img
+    src="{{ url_for('static', filename='videos/thankyou1.gif') }}"
+    alt="Thank you GIF"
+    class="success-gif"
+    style="background: transparent;"
+  />
+  <a href="{{ url_for('main') }}" class="btn btn-home mt-2">Back to Home</a>
+</div>
+{% endblock %}

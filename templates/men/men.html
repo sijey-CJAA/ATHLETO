@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Fade-in wrapper for the whole section -->
+<div class="fadein-section">
+  <div class="container-fluid p-5 position-relative" style="background: linear-gradient(135deg, maroon 0%, #800020 100%); margin-top: -50px; z-index: 10; border-radius: 20px 20px 0 0; box-shadow: 0 -20px 40px rgba(0,0,0,0.2); transform: perspective(1000px) rotateX(-3deg);">
+      <div class="container">
+       <h1 class="text-center text-white display-3 fw-bold" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.3);">ATHLETO MEN SECTION</h1>
+      </div>
+      <div class="hero-accent" style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); width: 90%; height: 40px; background: white; border-radius: 50%; filter: blur(20px); opacity: 0.3;"></div>
+  </div>
+
+  <!-- ADD SPACE BELOW HEADER -->
+  <div style="height: 40px;"></div>
+
+  <div class="container">
+      <div class="row g-4">
+        {% for name, endpoint, image in [
+          ('TOPS', 'top_men', 'pictures/boy/top_men.png'),
+          ('BOTTOMS', 'bottom_men', 'pictures/boy/bottom_men.png'),
+          ('COMPRESSIONS', 'compression_men', 'pictures/boy/compression_men.png'),
+          ('TERNO', 'terno_men', 'pictures/boy/terno_men.png')
+        ] %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card h-100 shadow-sm breathing-card">
+            <a href="{{ url_for(endpoint) if endpoint != '#' else '#' }}" class="text-decoration-none stretched-link">
+              <img src="{{ url_for('static', filename=image) }}" class="card-img-top" alt="{{ name }}"
+                   style="height: 300px; object-fit: cover;">
+              <div class="card-body">
+                <h5 class="card-title">{{ name }}</h5>
+                <p class="card-text text-muted">Shop Now</p>
+              </div>
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+  </div>
+</div>
+
+<style>
+/* Breathing animation effect for cards */
+@keyframes breathing {
+  0%   { box-shadow: 0 4px 24px 0 rgba(128,0,0,0.10), 0 0 0 0 rgba(128,0,0,0.08); transform: scale(1);}
+  50%  { box-shadow: 0 8px 36px 8px rgba(128,0,0,0.18), 0 0 24px 8px rgba(128,0,0,0.14); transform: scale(1.035);}
+  100% { box-shadow: 0 4px 24px 0 rgba(128,0,0,0.10), 0 0 0 0 rgba(128,0,0,0.08); transform: scale(1);}
+}
+.breathing-card {
+  transition: box-shadow 0.3s, transform 0.3s;
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+.breathing-card:hover,
+.breathing-card:focus-visible {
+  animation: breathing 1.5s cubic-bezier(.4,0,.2,1) infinite;
+  z-index: 2;
+}
+
+/* Fade-in effect for section */
+.fadein-section {
+  opacity: 0;
+  transform: translateY(30px) scale(0.97);
+  animation: fadein-appear 1s cubic-bezier(.42,1.2,.51,1.01) forwards;
+  animation-delay: 0.2s;
+}
+@keyframes fadein-appear {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+</style>
+{% endblock %}

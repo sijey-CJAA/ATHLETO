@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Leave Feedback{% endblock %}
+{% block content %}
+<div class="container mt-5" style="max-width: 500px;">
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-primary text-white rounded-4">
+      <h4 class="mb-0">Product Feedback</h4>
+    </div>
+    <div class="card-body">
+      <form action="{{ url_for('product_feedback') }}" method="post">
+        <div class="mb-3">
+          <label for="order_id" class="form-label">Order ID</label>
+          <select class="form-select" id="order_id" name="order_id" required>
+            <option value="" selected disabled>Choose order...</option>
+            {% if orders|length == 0 %}
+              <option value="" disabled>No delivered orders available</option>
+            {% else %}
+              {% for order in orders %}
+                <option value="{{ order.id }}">{{ order.id }} - {{ order.name }}</option>
+              {% endfor %}
+            {% endif %}
+          </select>
+          {% if orders|length == 0 %}
+            <div class="form-text text-danger">
+              You have no delivered orders eligible for feedback.
+            </div>
+          {% endif %}
+        </div>
+        <div class="mb-3">
+          <label for="user" class="form-label">Your Name</label>
+          <input type="text" class="form-control" id="user" name="user" placeholder="Enter your name" value="{{ session.user }}" required>
+        </div>
+        <div class="mb-3">
+          <label for="rating" class="form-label">Rating</label>
+          <select class="form-select" id="rating" name="rating" required>
+            <option value="" selected disabled>Choose...</option>
+            <option value="5">5 - Excellent</option>
+            <option value="4">4 - Good</option>
+            <option value="3">3 - Fair</option>
+            <option value="2">2 - Poor</option>
+            <option value="1">1 - Terrible</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="comment" class="form-label">Comment</label>
+          <textarea class="form-control" id="comment" name="comment" rows="4" placeholder="Write your feedback here..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-success w-100" {% if orders|length == 0 %}disabled{% endif %}>Submit Feedback</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+ 
