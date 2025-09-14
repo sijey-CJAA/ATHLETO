@@ -1170,7 +1170,7 @@ def buy_now_shipping(product_id):
     )
 
 def is_extra_product(product_id):
-    return product_id.startswith('Extra') and 1 <= int(product_id[5:]) <= 20
+    return product_id.startswith('Extra') and product_id[5:].isdigit() and 1 <= int(product_id[5:]) <= 20
 
 
 def is_shoe_product(product_id):
@@ -2204,20 +2204,19 @@ def render_extra_product(product_id, template_path):
 
 @app.route("/shop1")
 def shop1():
-    # List of all Extra* product_ids in shop1
     extra_ids = [f"Extra{i}" for i in range(1, 21)]
     conn = sqlite3.connect("products.db")
     cur = conn.cursor()
-    # Get stocks for all Extra1-20
     cur.execute(
-        "SELECT product_id, stock FROM item_stocks WHERE product_id IN ({seq})".format(
-            seq=",".join(["?"] * len(extra_ids))
+        "SELECT product_id, stock FROM item_stocks WHERE product_id IN ({})".format(
+            ",".join("?" for _ in extra_ids)
         ),
         extra_ids
     )
-    stocks = dict(cur.fetchall())  # { "Extra1": 100, "Extra2": 50, ... }
+    stocks = dict(cur.fetchall())
     conn.close()
     return render_template("shop1.html", stocks=stocks)
+
 
 @app.route("/update_shoe_size_stock/<int:size_id>", methods=["POST"])
 def update_shoe_size_stock(size_id):
@@ -2292,6 +2291,12 @@ def shoes8():
 def shoes9():
     return render_shoe_product("shoes9", "shoes/shoes9.html")
 
+@app.route("/shop1/extra<int:num>")
+def render_extra(num):
+    product_id = f"Extra{num}"
+    template_path = f"shop1/extra{num}.html"
+    return render_accessory_or_equipment(product_id, template_path)
+
 
 DATABASE = 'products.db'
 
@@ -2301,6 +2306,30 @@ def get_product_db():
         g.product_db.row_factory = sqlite3.Row
     return g.product_db
 
+
+def check_extra_stocks():
+    conn = sqlite3.connect('products.db')
+    cur = conn.cursor()
+    for i in range(1, 21):
+        product_id = f"Extra{i}"
+        cur.execute("SELECT stock FROM item_stocks WHERE product_id = ?", (product_id,))
+        row = cur.fetchone()
+        print(f"{product_id}: {row['stock'] if row else 'Not found'}")
+    conn.close()
+
+def initialize_extra_stocks():
+    conn = sqlite3.connect('products.db')
+    cur = conn.cursor()
+    for i in range(1, 21):
+        product_id = f"Extra{i}"
+        # Check if stock entry exists
+        cur.execute("SELECT 1 FROM item_stocks WHERE product_id = ?", (product_id,))
+        if not cur.fetchone():
+            # Insert with default stock of 100
+            cur.execute("INSERT INTO item_stocks (product_id, stock) VALUES (?, ?)", 
+                       (product_id, 100))
+    conn.commit()
+    conn.close()
 
 def check_stock(product_id, size):
     product_db = get_product_db()
